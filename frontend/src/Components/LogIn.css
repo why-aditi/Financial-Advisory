@@ -26,4 +26,10 @@
   .signup-box .MuiButton-root {
     margin-top: 16px;
   }
+
+  .forgot{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
   

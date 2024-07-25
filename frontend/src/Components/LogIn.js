@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { TextField, Button, Container, Typography, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  Box,
+  Link,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import "./LogIn.css";
 
@@ -14,6 +21,14 @@ export default function Login() {
     setUserID("");
     setPassword("");
     navigate("/dashboard");
+  };
+
+  const handleForgotPassword = () => {
+    navigate("/forgot-password");
+  };
+
+  const handleForgotUserID = () => {
+    navigate("/forgot-user-id");
   };
 
   return (
@@ -50,14 +65,34 @@ export default function Login() {
               type="submit"
               variant="contained"
               sx={{
-                backgroundColor: "#F15400",
-                "&:hover": { backgroundColor: "#00248E" },
+                backgroundColor: "#00248E",
+                "&:hover": { backgroundColor: "#F15400" },
               }}
               fullWidth
             >
               Login
             </Button>
           </form>
+          <div className="forgot">
+            <Box mt={2}>
+              <Link
+                component="button"
+                onClick={handleForgotUserID}
+                variant="body2"
+              >
+                Forgot User ID?
+              </Link>
+            </Box>
+            <Box mt={1}>
+              <Link
+                component="button"
+                onClick={handleForgotPassword}
+                variant="body2"
+              >
+                Forgot Password?
+              </Link>
+            </Box>
+          </div>
         </Box>
       </Container>
     </div>

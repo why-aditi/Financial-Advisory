@@ -6,6 +6,9 @@ import Navbar from "./Components/Navbar";
 import SignUp from "./Components/SignUp";
 import Home from "./Components/Home";
 import LogIn from "./Components/LogIn";
+import ForgotPass from "./Components/ForgotPass";
+import ForgotUserID from "./Components/ForgotId";
+import Form from "./Components/Form"; // Corrected import
 
 function App() {
   return (
@@ -15,6 +18,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<LogIn />} />
+        <Route path="/form" element={<Form />} />{" "}
+        <Route path="/forgot-password" element={<ForgotPass />} />
+        <Route path="/forgot-user-id" element={<ForgotUserID />} />
       </Routes>
     </Router>
   );

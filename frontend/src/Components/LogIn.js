@@ -74,24 +74,20 @@ export default function Login() {
             </Button>
           </form>
           <div className="forgot">
-            <Box mt={2}>
-              <Link
-                component="button"
-                onClick={handleForgotUserID}
-                variant="body2"
-              >
-                Forgot User ID?
-              </Link>
-            </Box>
-            <Box mt={1}>
-              <Link
-                component="button"
-                onClick={handleForgotPassword}
-                variant="body2"
-              >
-                Forgot Password?
-              </Link>
-            </Box>
+            <Link
+              component="button"
+              onClick={handleForgotUserID}
+              variant="body2"
+            >
+              Forgot User ID?
+            </Link>
+            <Link
+              component="button"
+              onClick={handleForgotPassword}
+              variant="body2"
+            >
+              Forgot Password?
+            </Link>
           </div>
         </Box>
       </Container>

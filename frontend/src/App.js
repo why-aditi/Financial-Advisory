@@ -6,7 +6,6 @@ import Navbar from "./Components/Navbar";
 import SignUp from "./Components/SignUp";
 import Home from "./Components/Home";
 import LogIn from "./Components/LogIn";
-import Form from "./Components/Form";
 
 function App() {
   return (
@@ -16,7 +15,6 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<LogIn />} />
-        <Route path="/form" element={<Form />} />
       </Routes>
     </Router>
   );

@@ -4,10 +4,16 @@
     padding-top: 1rem;
     padding-left: 1rem;
     border-bottom: 1rem solid #F15400;
+    align-items: center;
+    justify-content: space-between;
 }
   
 .logo {
     width: 5rem;
     height: 5rem;
-}  
+}
+
+.button_ls{
+    padding: 0 1rem;
+}
 

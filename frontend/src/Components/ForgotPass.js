@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import "./SignUp.css";
+import "./Forgot.css";
 
-export default function SignUp() {
+export default function ForgotPass() {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
@@ -11,15 +11,19 @@ export default function SignUp() {
     e.preventDefault();
     console.log("Email:", email);
     setEmail("");
-    navigate("/form");
+    navigate("/password-reset-confirmation");
   };
 
   return (
-    <div className="signup-container">
+    <div className="forgot-box">
       <Container maxWidth="xs">
-        <Box className="signup-box" p={3} boxShadow={3}>
+        <Box className="forgot-box" p={3} boxShadow={3}>
           <Typography variant="h4" gutterBottom>
-            Sign Up
+            Forgot Password
+          </Typography>
+          <Typography variant="body1" paragraph>
+            To reset your password, please enter your email address. We will
+            send you instructions to reset your password.
           </Typography>
           <form onSubmit={handleSubmit}>
             <Box mb={2}>
@@ -37,12 +41,12 @@ export default function SignUp() {
               type="submit"
               variant="contained"
               sx={{
-                backgroundColor: "#F15400",
-                "&:hover": { backgroundColor: "#00248E" },
+                backgroundColor: "#00248E",
+                "&:hover": { backgroundColor: "#F15400" },
               }}
               fullWidth
             >
-              Register
+              Request Password Reset
             </Button>
           </form>
         </Box>

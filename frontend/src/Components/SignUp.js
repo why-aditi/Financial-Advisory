@@ -7,11 +7,32 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    console.log("Email:", email);
-    setEmail("");
-    navigate("/form");
+    try {
+      const response = await fetch("http://localhost:5000/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem("userEmail", email);
+        localStorage.setItem("authToken", data.token);
+        alert(data.msg);
+        if (data.msg === "User registered successfully") {
+          navigate("/form");
+        }
+      } else {
+        alert(data.msg);
+      }
+    } catch (error) {
+      console.error("Error signing up:", error);
+      alert("Error signing up");
+    }
   };
 
   return (
@@ -21,7 +42,7 @@ export default function SignUp() {
           <Typography variant="h4" gutterBottom>
             Sign Up
           </Typography>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSignup}>
             <Box mb={2}>
               <TextField
                 fullWidth

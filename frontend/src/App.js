@@ -8,7 +8,8 @@ import Home from "./Components/Home";
 import LogIn from "./Components/LogIn";
 import ForgotPass from "./Components/ForgotPass";
 import ForgotUserID from "./Components/ForgotId";
-import Form from "./Components/Form"; // Corrected import
+import Form from "./Components/Form";
+import Dashboard from "./Components/Dashboard";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/form" element={<Form />} />
         <Route path="/forgot-password" element={<ForgotPass />} />
         <Route path="/forgot-user-id" element={<ForgotUserID />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );

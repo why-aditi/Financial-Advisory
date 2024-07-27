@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, FormControl } from "@mui/material";
+import { useNavigate } from "react-router-dom"; // Import from react-router-dom
 import "./Form.css";
 
 export default function Form() {
@@ -27,6 +28,8 @@ export default function Form() {
     insurancePolicies: "",
   });
 
+  const navigate = useNavigate(); // Initialize useNavigate hook
+
   const handleButtonClick = (field, value) => {
     setFormData({ ...formData, [field]: value });
   };
@@ -36,9 +39,49 @@ export default function Form() {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const allFieldsFilled = Object.values(formData).every(
+      (value) => value !== ""
+    );
+    if (!allFieldsFilled) {
+      alert("Please fill out all fields before submitting.");
+      return;
+    }
+
+    const email = localStorage.getItem("userEmail"); // Retrieve email from local storage
+    if (!email) {
+      alert("No user email found. Please sign up again.");
+      navigate("/signup"); // Redirect to sign-up if no email found
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/submit-form", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, formData }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert(data.msg);
+        navigate(`/dashboard/${email}`);
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Error submitting form");
+    }
+  };
+
   return (
     <div className="form-container">
-      <form>
+      <form onSubmit={handleSubmit}>
         <h1>Financial Form</h1>
 
         <label>
@@ -334,112 +377,38 @@ export default function Form() {
             >
               1,00,000-5,00,000
             </Button>
-          </div>
-        </FormControl>
-
-        <label>
-          Do you have any investments?
-          <input
-            type="text"
-            name="investments"
-            value={formData.investments}
-            onChange={handleInputChange}
-            placeholder="Stocks, Bonds, Mutual Funds, etc."
-          />
-        </label>
-
-        <FormControl component="fieldset">
-          <label>What is your risk tolerance?</label>
-          <div className="button-group">
             <Button
               className="button"
               variant={
-                formData.riskTolerance === "Conservative"
+                formData.contribution === "5,00,000 and above"
                   ? "contained"
                   : "outlined"
               }
-              onClick={() => handleButtonClick("riskTolerance", "Conservative")}
-            >
-              Conservative
-            </Button>
-            <Button
-              className="button"
-              variant={
-                formData.riskTolerance === "Moderate" ? "contained" : "outlined"
+              onClick={() =>
+                handleButtonClick("contribution", "5,00,000 and above")
               }
-              onClick={() => handleButtonClick("riskTolerance", "Moderate")}
             >
-              Moderate
-            </Button>
-            <Button
-              className="button"
-              variant={
-                formData.riskTolerance === "Aggressive"
-                  ? "contained"
-                  : "outlined"
-              }
-              onClick={() => handleButtonClick("riskTolerance", "Aggressive")}
-            >
-              Aggressive
+              5,00,000 and above
             </Button>
           </div>
         </FormControl>
 
-        <label>
-          How comfortable are you with the idea of losing money in investment
-          for short-term?
-          <input
-            type="text"
-            name="experience"
-            value={formData.experience}
-            onChange={handleInputChange}
-            placeholder="Comfort level with short-term losses"
-          />
-        </label>
-
-        <label>
-          Debt and Liabilities
-          <input
-            type="text"
-            name="debtLiabilities"
-            value={formData.debtLiabilities}
-            onChange={handleInputChange}
-            placeholder="Debt and liabilities details"
-          />
-        </label>
-
-        <label>
-          Current Debts?
-          <input
-            type="text"
-            name="currentDebts"
-            value={formData.currentDebts}
-            onChange={handleInputChange}
-            placeholder="Current debts details"
-          />
-        </label>
-
         <FormControl component="fieldset">
-          <label>
-            Do you have any outstanding debts? (student loans, credit card
-            debts, etc.)
-          </label>
+          <label>Do you have any investments?</label>
           <div className="button-group">
             <Button
               className="button"
               variant={
-                formData.outstandingDebts === "Yes" ? "contained" : "outlined"
+                formData.investments === "Yes" ? "contained" : "outlined"
               }
-              onClick={() => handleButtonClick("outstandingDebts", "Yes")}
+              onClick={() => handleButtonClick("investments", "Yes")}
             >
               Yes
             </Button>
             <Button
               className="button"
-              variant={
-                formData.outstandingDebts === "No" ? "contained" : "outlined"
-              }
-              onClick={() => handleButtonClick("outstandingDebts", "No")}
+              variant={formData.investments === "No" ? "contained" : "outlined"}
+              onClick={() => handleButtonClick("investments", "No")}
             >
               No
             </Button>
@@ -447,48 +416,129 @@ export default function Form() {
         </FormControl>
 
         <label>
-          What is the total amount of outstanding debts?
+          What is your risk tolerance?
+          <input
+            type="text"
+            name="riskTolerance"
+            value={formData.riskTolerance}
+            onChange={handleInputChange}
+            placeholder="High, Medium, Low"
+          />
+        </label>
+
+        <label>
+          What is your level of experience with investments?
+          <input
+            type="text"
+            name="experience"
+            value={formData.experience}
+            onChange={handleInputChange}
+            placeholder="Beginner, Intermediate, Expert"
+          />
+        </label>
+
+        <FormControl component="fieldset">
+          <label>Do you have any debts or liabilities?</label>
+          <div className="button-group">
+            <Button
+              className="button"
+              variant={
+                formData.debtLiabilities === "Yes" ? "contained" : "outlined"
+              }
+              onClick={() => handleButtonClick("debtLiabilities", "Yes")}
+            >
+              Yes
+            </Button>
+            <Button
+              className="button"
+              variant={
+                formData.debtLiabilities === "No" ? "contained" : "outlined"
+              }
+              onClick={() => handleButtonClick("debtLiabilities", "No")}
+            >
+              No
+            </Button>
+          </div>
+        </FormControl>
+
+        <label>
+          How much current debts do you have?
+          <input
+            type="text"
+            name="currentDebts"
+            value={formData.currentDebts}
+            onChange={handleInputChange}
+            placeholder="Current Debts"
+          />
+        </label>
+
+        <label>
+          How much outstanding debts do you have?
+          <input
+            type="text"
+            name="outstandingDebts"
+            value={formData.outstandingDebts}
+            onChange={handleInputChange}
+            placeholder="Outstanding Debts"
+          />
+        </label>
+
+        <label>
+          Total amount of outstanding debts?
           <input
             type="text"
             name="totalOutstandingDebts"
             value={formData.totalOutstandingDebts}
             onChange={handleInputChange}
-            placeholder="Total outstanding debts amount"
+            placeholder="Total Outstanding Debts"
           />
         </label>
 
-        <label>
-          Insurance
-          <input
-            type="text"
-            name="insurance"
-            value={formData.insurance}
-            onChange={handleInputChange}
-            placeholder="Insurance details"
-          />
-        </label>
+        <FormControl component="fieldset">
+          <label>Do you have any insurance policies?</label>
+          <div className="button-group">
+            <Button
+              className="button"
+              variant={formData.insurance === "Yes" ? "contained" : "outlined"}
+              onClick={() => handleButtonClick("insurance", "Yes")}
+            >
+              Yes
+            </Button>
+            <Button
+              className="button"
+              variant={formData.insurance === "No" ? "contained" : "outlined"}
+              onClick={() => handleButtonClick("insurance", "No")}
+            >
+              No
+            </Button>
+          </div>
+        </FormControl>
 
         <label>
-          Insurance coverage
+          What is the coverage amount of your insurance policies?
           <input
             type="text"
             name="insuranceCoverage"
             value={formData.insuranceCoverage}
             onChange={handleInputChange}
-            placeholder="Insurance coverage details"
+            placeholder="Insurance Coverage"
           />
         </label>
 
         <label>
-          Do you have any insurance policies?
+          What types of insurance policies do you have?
           <input
             type="text"
             name="insurancePolicies"
             value={formData.insurancePolicies}
             onChange={handleInputChange}
-            placeholder="Insurance policies details"
+            placeholder="Life, Health, Vehicle, etc."
           />
         </label>
+
+        <Button type="submit" variant="contained" color="primary">
+          Submit
+        </Button>
       </form>
     </div>
   );

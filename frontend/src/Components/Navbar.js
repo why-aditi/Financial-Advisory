@@ -12,7 +12,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <a className="navbar-brand" href="/">
         <img src={logo} alt="Bob World Logo" className="logo" />
       </a>
@@ -39,8 +39,9 @@ export default function Navbar() {
                 <Button
                   variant="contained"
                   sx={{
-                    backgroundColor: "#00248E",
-                    "&:hover": { backgroundColor: "#001F5C" },
+                    backgroundColor: "#007BFF", // Adjusted for dark theme
+                    color: "#FFFFFF", // Text color for visibility
+                    "&:hover": { backgroundColor: "#0056b3" }, // Darker shade on hover
                   }}
                 >
                   Login
@@ -49,7 +50,16 @@ export default function Navbar() {
             </li>
             <li className="nav-item ml-2">
               <a className="nav-link" href="/signup">
-                <Button variant="outlined">Signup</Button>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderColor: "#007BFF",
+                    color: "#007BFF",
+                    "&:hover": { borderColor: "#0056b3", color: "#0056b3" },
+                  }}
+                >
+                  Signup
+                </Button>
               </a>
             </li>
           </ul>

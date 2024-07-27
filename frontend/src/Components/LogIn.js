@@ -11,48 +11,9 @@ import { useNavigate } from "react-router-dom";
 import "./LogIn.css";
 
 export default function Login() {
-  const [userID, setUserID] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // To handle errors
   const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Perform basic validation
-    if (!userID || !password) {
-      setError("User ID and Password are required.");
-      return;
-    }
-
-    try {
-      // Send login request
-      const response = await fetch("http://localhost:5000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userID, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Save token and navigate to dashboard
-        localStorage.setItem("token", data.token); // Save token if using JWT
-        navigate("/dashboard");
-      } else {
-        setError(data.error);
-      }
-    } catch (error) {
-      console.error("Error logging in:", error);
-      setError("An error occurred. Please try again.");
-    }
-
-    // Clear fields
-    setUserID("");
-    setPassword("");
-  };
 
   const handleForgotPassword = () => {
     navigate("/forgot-password");
@@ -62,6 +23,34 @@ export default function Login() {
     navigate("/forgot-user-id");
   };
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem("userEmail", email);
+        localStorage.setItem("authToken", data.token);
+        alert(data.msg);
+        if (data.msg === "Login successful") {
+          navigate("/dashboard");
+        }
+      } else {
+        alert(data.msg);
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+      alert("Error logging in");
+    }
+  };
+
   return (
     <div className="login-container">
       <Container maxWidth="xs">
@@ -69,15 +58,15 @@ export default function Login() {
           <Typography variant="h4" gutterBottom>
             Login
           </Typography>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleLogin}>
             <Box mb={2}>
               <TextField
                 fullWidth
-                label="User ID"
-                type="text"
+                label="Email"
+                type="email"
                 variant="outlined"
-                value={userID}
-                onChange={(e) => setUserID(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </Box>
@@ -92,17 +81,12 @@ export default function Login() {
                 required
               />
             </Box>
-            {error && (
-              <Typography color="error" variant="body2" gutterBottom>
-                {error}
-              </Typography>
-            )}
             <Button
               type="submit"
               variant="contained"
               sx={{
-                backgroundColor: "#00248E",
-                "&:hover": { backgroundColor: "#F15400" },
+                backgroundColor: "#F15400",
+                "&:hover": { backgroundColor: "#00248E" },
               }}
               fullWidth
             >

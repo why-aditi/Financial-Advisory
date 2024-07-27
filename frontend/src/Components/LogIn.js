@@ -13,14 +13,45 @@ import "./LogIn.css";
 export default function Login() {
   const [userID, setUserID] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // To handle errors
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("User ID:", userID, "Password:", password);
+
+    // Perform basic validation
+    if (!userID || !password) {
+      setError("User ID and Password are required.");
+      return;
+    }
+
+    try {
+      // Send login request
+      const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userID, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Save token and navigate to dashboard
+        localStorage.setItem("token", data.token); // Save token if using JWT
+        navigate("/dashboard");
+      } else {
+        setError(data.error);
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+      setError("An error occurred. Please try again.");
+    }
+
+    // Clear fields
     setUserID("");
     setPassword("");
-    navigate("/dashboard");
   };
 
   const handleForgotPassword = () => {
@@ -61,6 +92,11 @@ export default function Login() {
                 required
               />
             </Box>
+            {error && (
+              <Typography color="error" variant="body2" gutterBottom>
+                {error}
+              </Typography>
+            )}
             <Button
               type="submit"
               variant="contained"

@@ -19,15 +19,13 @@ export default function SignUp() {
       });
 
       const data = await response.json();
+      console.log("Response status:", response.status);
+      console.log("Response data:", data);
+
       if (response.ok) {
-        localStorage.setItem("userEmail", email);
-        localStorage.setItem("authToken", data.token);
-        alert(data.msg);
-        if (data.msg === "User registered successfully") {
-          navigate("/form");
-        }
+        navigate("/form");
       } else {
-        alert(data.msg);
+        alert(data.msg || "Signup failed");
       }
     } catch (error) {
       console.error("Error signing up:", error);

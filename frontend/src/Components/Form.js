@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, FormControl } from "@mui/material";
-import { useNavigate } from "react-router-dom"; // Import from react-router-dom
+import { useNavigate } from "react-router-dom";
 import "./Form.css";
 
 export default function Form() {
@@ -28,7 +28,8 @@ export default function Form() {
     insurancePolicies: "",
   });
 
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   const handleButtonClick = (field, value) => {
     setFormData({ ...formData, [field]: value });
@@ -39,8 +40,25 @@ export default function Form() {
     setFormData({ ...formData, [name]: value });
   };
 
+  const validateForm = () => {
+    let formErrors = {};
+    if (!formData.age || isNaN(formData.age) || formData.age <= 0) {
+      formErrors.age = "Please enter a valid age.";
+    }
+    if (!formData.annualIncome || isNaN(formData.annualIncome)) {
+      formErrors.annualIncome = "Please enter a valid annual income.";
+    }
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      alert("Please fix the errors before submitting.");
+      return;
+    }
 
     const allFieldsFilled = Object.values(formData).every(
       (value) => value !== ""
@@ -50,15 +68,17 @@ export default function Form() {
       return;
     }
 
-    const email = localStorage.getItem("userEmail"); // Retrieve email from local storage
+    const email = localStorage.getItem("userEmail");
     if (!email) {
       alert("No user email found. Please sign up again.");
-      navigate("/signup"); // Redirect to sign-up if no email found
+      navigate("/signup");
       return;
     }
 
+    console.log("Submitting form data:", { email, formData }); // Log the data
+
     try {
-      const response = await fetch("http://localhost:5000/submit-form", {
+      const response = await fetch("http://localhost:5000/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,6 +113,7 @@ export default function Form() {
             onChange={handleInputChange}
             placeholder="Age"
           />
+          {errors.age && <span className="error">{errors.age}</span>}
         </label>
 
         <FormControl component="fieldset">
@@ -204,6 +225,9 @@ export default function Form() {
             onChange={handleInputChange}
             placeholder="Annual Income"
           />
+          {errors.annualIncome && (
+            <span className="error">{errors.annualIncome}</span>
+          )}
         </label>
 
         <label>
@@ -302,143 +326,172 @@ export default function Form() {
             <Button
               className="button"
               variant={
-                formData.savings === "50,00,000-1,00,00,000"
-                  ? "contained"
-                  : "outlined"
+                formData.savings === "50,00,000+" ? "contained" : "outlined"
               }
-              onClick={() =>
-                handleButtonClick("savings", "50,00,000-1,00,00,000")
-              }
+              onClick={() => handleButtonClick("savings", "50,00,000+")}
             >
-              50,00,000-1,00,00,000
-            </Button>
-            <Button
-              className="button"
-              variant={
-                formData.savings === "1,00,00,000 and above"
-                  ? "contained"
-                  : "outlined"
-              }
-              onClick={() =>
-                handleButtonClick("savings", "1,00,00,000 and above")
-              }
-            >
-              1,00,00,000 and above
+              50,00,000+
             </Button>
           </div>
         </FormControl>
 
         <FormControl component="fieldset">
-          <label>How much do you contribute to your savings?</label>
+          <label>
+            What is your current level of contribution to savings each month?
+          </label>
           <div className="button-group">
             <Button
               className="button"
               variant={
-                formData.contribution === "0-10,000" ? "contained" : "outlined"
-              }
-              onClick={() => handleButtonClick("contribution", "0-10,000")}
-            >
-              0-10,000
-            </Button>
-            <Button
-              className="button"
-              variant={
-                formData.contribution === "10,000-50,000"
+                formData.contribution === "Below 5,000"
                   ? "contained"
                   : "outlined"
               }
-              onClick={() => handleButtonClick("contribution", "10,000-50,000")}
+              onClick={() => handleButtonClick("contribution", "Below 5,000")}
             >
-              10,000-50,000
+              Below 5,000
             </Button>
             <Button
               className="button"
               variant={
-                formData.contribution === "50,000-1,00,000"
+                formData.contribution === "5,000-10,000"
                   ? "contained"
                   : "outlined"
               }
-              onClick={() =>
-                handleButtonClick("contribution", "50,000-1,00,000")
-              }
+              onClick={() => handleButtonClick("contribution", "5,000-10,000")}
             >
-              50,000-1,00,000
+              5,000-10,000
             </Button>
             <Button
               className="button"
               variant={
-                formData.contribution === "1,00,000-5,00,000"
+                formData.contribution === "10,000-25,000"
                   ? "contained"
                   : "outlined"
               }
-              onClick={() =>
-                handleButtonClick("contribution", "1,00,000-5,00,000")
-              }
+              onClick={() => handleButtonClick("contribution", "10,000-25,000")}
             >
-              1,00,000-5,00,000
+              10,000-25,000
             </Button>
             <Button
               className="button"
               variant={
-                formData.contribution === "5,00,000 and above"
+                formData.contribution === "25,000-50,000"
                   ? "contained"
                   : "outlined"
               }
-              onClick={() =>
-                handleButtonClick("contribution", "5,00,000 and above")
-              }
+              onClick={() => handleButtonClick("contribution", "25,000-50,000")}
             >
-              5,00,000 and above
+              25,000-50,000
             </Button>
-          </div>
-        </FormControl>
-
-        <FormControl component="fieldset">
-          <label>Do you have any investments?</label>
-          <div className="button-group">
             <Button
               className="button"
               variant={
-                formData.investments === "Yes" ? "contained" : "outlined"
+                formData.contribution === "Above 50,000"
+                  ? "contained"
+                  : "outlined"
               }
-              onClick={() => handleButtonClick("investments", "Yes")}
+              onClick={() => handleButtonClick("contribution", "Above 50,000")}
             >
-              Yes
-            </Button>
-            <Button
-              className="button"
-              variant={formData.investments === "No" ? "contained" : "outlined"}
-              onClick={() => handleButtonClick("investments", "No")}
-            >
-              No
+              Above 50,000
             </Button>
           </div>
         </FormControl>
 
         <label>
-          What is your risk tolerance?
+          What are your current investments?
           <input
             type="text"
-            name="riskTolerance"
-            value={formData.riskTolerance}
+            name="investments"
+            value={formData.investments}
             onChange={handleInputChange}
-            placeholder="High, Medium, Low"
-          />
-        </label>
-
-        <label>
-          What is your level of experience with investments?
-          <input
-            type="text"
-            name="experience"
-            value={formData.experience}
-            onChange={handleInputChange}
-            placeholder="Beginner, Intermediate, Expert"
+            placeholder="Investments"
           />
         </label>
 
         <FormControl component="fieldset">
-          <label>Do you have any debts or liabilities?</label>
+          <label>What is your risk tolerance?</label>
+          <div className="button-group">
+            <Button
+              className="button"
+              variant={
+                formData.riskTolerance === "Conservative"
+                  ? "contained"
+                  : "outlined"
+              }
+              onClick={() => handleButtonClick("riskTolerance", "Conservative")}
+            >
+              Conservative
+            </Button>
+            <Button
+              className="button"
+              variant={
+                formData.riskTolerance === "Moderate" ? "contained" : "outlined"
+              }
+              onClick={() => handleButtonClick("riskTolerance", "Moderate")}
+            >
+              Moderate
+            </Button>
+            <Button
+              className="button"
+              variant={
+                formData.riskTolerance === "Aggressive"
+                  ? "contained"
+                  : "outlined"
+              }
+              onClick={() => handleButtonClick("riskTolerance", "Aggressive")}
+            >
+              Aggressive
+            </Button>
+          </div>
+        </FormControl>
+
+        <FormControl component="fieldset">
+          <label>How much investment experience do you have?</label>
+          <div className="button-group">
+            <Button
+              className="button"
+              variant={
+                formData.experience === "None" ? "contained" : "outlined"
+              }
+              onClick={() => handleButtonClick("experience", "None")}
+            >
+              None
+            </Button>
+            <Button
+              className="button"
+              variant={
+                formData.experience === "Basic" ? "contained" : "outlined"
+              }
+              onClick={() => handleButtonClick("experience", "Basic")}
+            >
+              Basic
+            </Button>
+            <Button
+              className="button"
+              variant={
+                formData.experience === "Intermediate"
+                  ? "contained"
+                  : "outlined"
+              }
+              onClick={() => handleButtonClick("experience", "Intermediate")}
+            >
+              Intermediate
+            </Button>
+            <Button
+              className="button"
+              variant={
+                formData.experience === "Advanced" ? "contained" : "outlined"
+              }
+              onClick={() => handleButtonClick("experience", "Advanced")}
+            >
+              Advanced
+            </Button>
+          </div>
+        </FormControl>
+
+        <FormControl component="fieldset">
+          <label>Do you have any debt/liabilities?</label>
           <div className="button-group">
             <Button
               className="button"
@@ -462,7 +515,7 @@ export default function Form() {
         </FormControl>
 
         <label>
-          How much current debts do you have?
+          What type of debts do you have?
           <input
             type="text"
             name="currentDebts"
@@ -473,18 +526,18 @@ export default function Form() {
         </label>
 
         <label>
-          How much outstanding debts do you have?
+          What is your total outstanding debts amount?
           <input
             type="text"
             name="outstandingDebts"
             value={formData.outstandingDebts}
             onChange={handleInputChange}
-            placeholder="Outstanding Debts"
+            placeholder="Outstanding Debts Amount"
           />
         </label>
 
         <label>
-          Total amount of outstanding debts?
+          What is your total outstanding debts amount?
           <input
             type="text"
             name="totalOutstandingDebts"
@@ -495,7 +548,7 @@ export default function Form() {
         </label>
 
         <FormControl component="fieldset">
-          <label>Do you have any insurance policies?</label>
+          <label>Do you have any insurance?</label>
           <div className="button-group">
             <Button
               className="button"
@@ -515,7 +568,7 @@ export default function Form() {
         </FormControl>
 
         <label>
-          What is the coverage amount of your insurance policies?
+          What type of insurance coverage do you have?
           <input
             type="text"
             name="insuranceCoverage"
@@ -526,17 +579,17 @@ export default function Form() {
         </label>
 
         <label>
-          What types of insurance policies do you have?
+          How many insurance policies do you have?
           <input
             type="text"
             name="insurancePolicies"
             value={formData.insurancePolicies}
             onChange={handleInputChange}
-            placeholder="Life, Health, Vehicle, etc."
+            placeholder="Number of Policies"
           />
         </label>
 
-        <Button type="submit" variant="contained" color="primary">
+        <Button variant="contained" type="submit">
           Submit
         </Button>
       </form>

@@ -15,7 +15,7 @@ export default function ForgotPass() {
   };
 
   return (
-    <div className="forgot-box">
+    <div className="forgot-box-container">
       <Container maxWidth="xs">
         <Box className="forgot-box" p={3} boxShadow={3}>
           <Typography variant="h4" gutterBottom>

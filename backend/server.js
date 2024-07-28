@@ -17,6 +17,7 @@ mongoose.connect(MONGODB_URI, {
 .catch((error) => console.error('Error connecting to MongoDB Atlas:', error));
 
 const formSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
   age: Number,
   maritalStatus: String,
   dependents: String,
@@ -42,14 +43,34 @@ const formSchema = new mongoose.Schema({
 
 const FormData = mongoose.model('FormData', formSchema);
 
+// Signup endpoint
+app.post('/signup', async (req, res) => {
+  const { email, ...formData } = req.body;
+
+  try {
+    const existingUser = await FormData.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).send({ message: 'User already exists' });
+    }
+
+    const newFormData = new FormData({ email, ...formData });
+    await newFormData.save();
+
+    res.status(200).send({ message: 'Signup successful, redirecting to dashboard' });
+  } catch (error) {
+    console.error('Error during signup:', error);
+    res.status(500).send('Error during signup');
+  }
+});
+
+// Form submission endpoint
 app.post('/submit', async (req, res) => {
   const formData = new FormData(req.body);
 
   try {
     await formData.save();
-    // Assuming getLLMResponse is defined somewhere else in your code
-    const llmResponse = await getLLMResponse(JSON.stringify(req.body));
-    res.status(200).send({ message: 'Form data saved', llmResponse });
+    res.status(200).send({ message: 'Form data saved' });
   } catch (error) {
     console.error('Error saving form data:', error);
     res.status(500).send('Error saving form data');

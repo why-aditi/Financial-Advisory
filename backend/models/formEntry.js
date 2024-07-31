@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const formEntrySchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
   age: Number,
   maritalStatus: String,
   dependents: String,
@@ -22,6 +23,6 @@ const formEntrySchema = new mongoose.Schema({
   insurance: String,
   insuranceCoverage: String,
   insurancePolicies: String,
-});
+}, { collection: "formsubmit" });  // Avoid spaces and use lowercase for collection names
 
 module.exports = mongoose.model('FormEntry', formEntrySchema);

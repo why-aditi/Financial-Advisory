@@ -1,27 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const FormEntry = require('../models/formEntry');
+const FormEntry = require('../models/formEntry'); 
 
 // POST route to handle form submissions
 router.post('/', async (req, res) => {
   try {
     const newEntry = new FormEntry(req.body);
     await newEntry.save();
-    res.status(201).send('Form entry saved');
+    res.status(201).json({ message: 'Form entry saved' });
   } catch (error) {
-    res.status(400).send(error.message);
+    console.error("Error saving form entry:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-// GET route to retrieve all form entries (optional)
+// GET route to retrieve all form entries
 router.get('/', async (req, res) => {
   try {
     const entries = await FormEntry.find();
     res.status(200).json(entries);
   } catch (error) {
-    res.status(400).send(error.message);
+    console.error("Error fetching entries:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
 module.exports = router;
-

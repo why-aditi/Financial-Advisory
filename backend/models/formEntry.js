@@ -10,7 +10,6 @@ const formEntrySchema = new mongoose.Schema({
   extraIncome: String,
   financialGoals: String,
   shortTermGoals: String,
-  financialGoal: String,
   savings: String,
   contribution: String,
   investments: String,
@@ -23,6 +22,6 @@ const formEntrySchema = new mongoose.Schema({
   insurance: String,
   insuranceCoverage: String,
   insurancePolicies: String,
-}, { collection: "formsubmit" });  // Avoid spaces and use lowercase for collection names
+}, { collection: "FormEntries" });
 
 module.exports = mongoose.model('FormEntry', formEntrySchema);

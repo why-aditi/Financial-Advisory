@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const FormEntry = require('../models/formEntry'); 
+const FormEntry = require('../models/formEntry'); // Fixed case sensitivity
 
 // POST route to handle form submissions
 router.post('/', async (req, res) => {

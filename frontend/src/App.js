@@ -2,7 +2,11 @@ import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
+import { createTheme, ThemeProvider, CssBaseline, Box } from "@mui/material";
+import { useState, useMemo, useEffect } from "react";
 import Navbar from "./Components/Navbar";
+import Footer from "./Components/Footer";
+import ScrollToTop from "./Components/ScrollToTop";
 import SignUp from "./Components/SignUp";
 import Home from "./Components/Home";
 import LogIn from "./Components/LogIn";
@@ -12,19 +16,114 @@ import Form from "./Components/Form";
 import Dashboard from "./Components/Dashboard";
 
 function App() {
+  const [mode, setMode] = useState("light");
+
+  // Set document title
+  useEffect(() => {
+    document.title = "A2K Financial";
+  }, []);
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+          primary: {
+            main: "#1E88E5", // Modern blue
+            light: "#64B5F6",
+            dark: "#0D47A1",
+            contrastText: "#FFFFFF",
+          },
+          secondary: {
+            main: "#FF8F00", // Warm orange
+            light: "#FFB74D",
+            dark: "#EF6C00",
+            contrastText: "#FFFFFF",
+          },
+          background: {
+            default: mode === "light" ? "#F5F5F5" : "#121212",
+            paper: mode === "light" ? "#FFFFFF" : "#1E1E1E",
+          },
+          text: {
+            primary: mode === "light" ? "#212121" : "#FFFFFF",
+            secondary: mode === "light" ? "#757575" : "#B0B0B0",
+          },
+        },
+        typography: {
+          fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
+          h1: {
+            fontWeight: 600,
+          },
+          h2: {
+            fontWeight: 600,
+          },
+          h3: {
+            fontWeight: 500,
+          },
+          button: {
+            fontWeight: 500,
+            textTransform: "none",
+          },
+        },
+        shape: {
+          borderRadius: 8,
+        },
+        components: {
+          MuiButton: {
+            styleOverrides: {
+              root: {
+                boxShadow: "none",
+                "&:hover": {
+                  boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                },
+              },
+            },
+          },
+          MuiCard: {
+            styleOverrides: {
+              root: {
+                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.05)",
+                borderRadius: 12,
+              },
+            },
+          },
+        },
+      }),
+    [mode]
+  );
+
+  const toggleColorMode = () => {
+    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+  };
+
   return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/login" element={<LogIn />} />
-        <Route path="/form" element={<Form />} />
-        <Route path="/forgot-password" element={<ForgotPass />} />
-        <Route path="/forgot-user-id" element={<ForgotUserID />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-    </Router>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        <ScrollToTop />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            minHeight: "100vh",
+          }}
+        >
+          <Navbar toggleColorMode={toggleColorMode} mode={mode} />
+          <Box sx={{ flexGrow: 1 }}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/login" element={<LogIn />} />
+              <Route path="/form" element={<Form />} />
+              <Route path="/forgot-password" element={<ForgotPass />} />
+              <Route path="/forgot-user-id" element={<ForgotUserID />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Routes>
+          </Box>
+          <Footer />
+        </Box>
+      </Router>
+    </ThemeProvider>
   );
 }
 

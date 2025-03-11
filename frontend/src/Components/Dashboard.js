@@ -319,7 +319,7 @@ function Dashboard() {
         
         {/* Logout Button */}
         <Button
-          startIcon={<Box component="span" className="material-icons">logout</Box>}
+          startIcon={<Box component="span" className="material-icons"></Box>}
           variant="contained"
           color="primary"
           onClick={handleLogout}

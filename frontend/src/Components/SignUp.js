@@ -63,7 +63,7 @@ export default function SignUp() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      console.error("Passwords do not match");
       return;
     }
     try {
@@ -83,14 +83,13 @@ export default function SignUp() {
         localStorage.setItem("userId", data.userId);
         localStorage.setItem("userEmail", email);
 
-        alert("Registration successful! Redirecting to form...");
+        console.log("Registration successful! Redirecting to form...");
         navigate("/form"); // Redirect to form page instead of login
       } else {
         alert(data.msg || "Registration failed");
       }
     } catch (error) {
       console.error("Error signing up:", error);
-      alert("Error signing up");
     }
   };
 

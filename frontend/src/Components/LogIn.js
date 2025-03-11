@@ -61,14 +61,13 @@ export default function Login() {
         localStorage.setItem("userId", data.userId);
         localStorage.setItem("userEmail", email);
 
-        alert("Login successful!");
+        console.log("Login successful!");
         navigate("/form"); // Redirect to form page
       } else {
-        alert(data.msg || "Login failed");
+        console.error(data.msg || "Login failed");
       }
     } catch (error) {
       console.error("Error logging in:", error);
-      alert("Error logging in");
     }
   };
 

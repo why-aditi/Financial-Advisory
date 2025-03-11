@@ -27,9 +27,14 @@ function Dashboard() {
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
+    const storedUserName = localStorage.getItem("userName");
+    
+    setUserName(storedUserName || "");
+    
     if (!token) {
       alert("Please log in to access this page");
       navigate("/login");
@@ -67,6 +72,13 @@ function Dashboard() {
         }
 
         setUserData(userData.user);
+        
+        // If we got a name from the API, update the userName in localStorage
+        if (userData.user && userData.user.name) {
+          localStorage.setItem("userName", userData.user.name);
+          setUserName(userData.user.name);
+        }
+        
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -86,6 +98,7 @@ function Dashboard() {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userId");
     localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
     navigate("/login");
   };
 
@@ -160,7 +173,7 @@ function Dashboard() {
           }}
         >
           <Typography variant="h4" component="h1" gutterBottom color="primary">
-            Welcome, {userData.name}!
+            Welcome, {userData?.name || userName || "User"}!
           </Typography>
           <Button variant="outlined" color="primary" onClick={handleLogout}>
             Logout

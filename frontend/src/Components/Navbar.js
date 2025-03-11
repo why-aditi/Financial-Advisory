@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -16,20 +16,75 @@ import {
   Container,
   Switch,
   FormControlLabel,
+  Avatar,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Divider,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import PersonIcon from "@mui/icons-material/Person";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 export default function Navbar({ toggleColorMode, mode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [userName, setUserName] = useState("");
+  const [anchorEl, setAnchorEl] = useState(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // Check authentication status when component mounts
+  useEffect(() => {
+    const authToken = localStorage.getItem("authToken");
+    const email = localStorage.getItem("userEmail");
+    const name = localStorage.getItem("userName");
+    setIsAuthenticated(!!authToken);
+    setUserEmail(email || "");
+    setUserName(name || "");
+  }, [location]); // Re-check when location changes
 
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
+  };
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
+    setIsAuthenticated(false);
+    setUserEmail("");
+    setUserName("");
+    handleMenuClose();
+    navigate("/login");
+  };
+
+  // Get the first letter of user's name for the avatar
+  const getInitial = () => {
+    if (userName && userName.length > 0) {
+      return userName.charAt(0).toUpperCase();
+    }
+    if (userEmail && userEmail.length > 0) {
+      return userEmail.charAt(0).toUpperCase();
+    }
+    return "U";
   };
 
   const scrollToSection = (sectionId) => {
@@ -69,6 +124,25 @@ export default function Navbar({ toggleColorMode, mode }) {
     },
   ];
 
+  // Items for authenticated users only
+  const authNavItems = [
+    {
+      name: "Dashboard",
+      path: "/dashboard",
+      action: () => navigate("/dashboard"),
+      icon: <DashboardIcon />
+    },
+    {
+      name: "Profile",
+      path: "/profile",
+      action: () => navigate("/dashboard"),
+      icon: <PersonIcon />
+    }
+  ];
+
+  // Choose which navigation items to display based on authentication status
+  const displayNavItems = isAuthenticated ? authNavItems : navItems;
+
   // Handle hash links when page loads
   useEffect(() => {
     if (isHomePage && location.hash) {
@@ -85,7 +159,82 @@ export default function Navbar({ toggleColorMode, mode }) {
     }
   }, [location, isHomePage]);
 
-  const drawer = (
+  // Logged in user drawer (left side)
+  const authDrawer = (
+    <Box 
+      sx={{ 
+        width: 250, 
+        height: "100%", 
+        display: "flex", 
+        flexDirection: "column" 
+      }} 
+      role="presentation"
+    >
+      <Box sx={{ p: 2, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Avatar sx={{ width: 40, height: 40, bgcolor: theme.palette.primary.main, mr: 2 }}>
+            {getInitial()}
+          </Avatar>
+          <Typography variant="subtitle1" sx={{ fontWeight: "medium" }}>
+            {userName}
+          </Typography>
+        </Box>
+        <IconButton onClick={handleDrawerToggle}>
+          <CloseIcon />
+        </IconButton>
+      </Box>
+      
+      <Divider />
+      
+      <List sx={{ flexGrow: 1 }}>
+        {authNavItems.map((item) => (
+          <ListItem 
+            button 
+            key={item.name} 
+            onClick={() => {
+              item.action();
+              handleDrawerToggle();
+            }}
+          >
+            <ListItemIcon>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.name} />
+          </ListItem>
+        ))}
+      </List>
+      
+      <Box sx={{ p: 2 }}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={mode === "dark"}
+              onChange={toggleColorMode}
+              color="primary"
+            />
+          }
+          label={mode === "dark" ? "Dark Mode" : "Light Mode"}
+        />
+      </Box>
+      
+      <Divider />
+      
+      <ListItem 
+        button 
+        onClick={handleLogout}
+        sx={{ bgcolor: theme.palette.action.hover }}
+      >
+        <ListItemIcon>
+          <LogoutIcon color="error" />
+        </ListItemIcon>
+        <ListItemText 
+          primary="Logout" 
+          primaryTypographyProps={{ color: "error" }}
+        />
+      </ListItem>
+    </Box>
+  );
+
+  // Non-authenticated user drawer (right side)
+  const publicDrawer = (
     <Box sx={{ width: 250, height: "100%" }} role="presentation">
       <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
         <IconButton onClick={handleDrawerToggle}>
@@ -123,9 +272,20 @@ export default function Navbar({ toggleColorMode, mode }) {
     <AppBar position="sticky" color="default" elevation={1}>
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
-          {/* Logo */}
+          {/* Logo and Menu Button for logged in users */}
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <RouterLink to="/" style={{ textDecoration: "none" }}>
+            {isAuthenticated && (
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ mr: 2 }}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
+            <RouterLink to={isAuthenticated ? "/dashboard" : "/"} style={{ textDecoration: "none" }}>
               <Typography
                 variant="h6"
                 component="div"
@@ -141,8 +301,8 @@ export default function Navbar({ toggleColorMode, mode }) {
             </RouterLink>
           </Box>
 
-          {/* Desktop Navigation */}
-          {!isMobile && (
+          {/* Desktop Navigation - only for non-authenticated users */}
+          {!isMobile && !isAuthenticated && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               {navItems.map((item) => (
                 <Button
@@ -161,8 +321,8 @@ export default function Navbar({ toggleColorMode, mode }) {
             </Box>
           )}
 
-          {/* Mobile Navigation */}
-          {isMobile && (
+          {/* Mobile Navigation - For non-authenticated users */}
+          {isMobile && !isAuthenticated && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Button
                 variant="contained"
@@ -194,8 +354,32 @@ export default function Navbar({ toggleColorMode, mode }) {
             </Box>
           )}
 
-          {/* Auth Buttons (Desktop) */}
-          {!isMobile && (
+          {/* Mobile User Menu Icon - For authenticated users */}
+          {isMobile && isAuthenticated && (
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <IconButton
+                color="inherit"
+                onClick={toggleColorMode}
+                sx={{ mr: 1 }}
+              >
+                {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+              <IconButton
+                color="inherit"
+                onClick={handleMenuOpen}
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+              >
+                <Avatar sx={{ width: 32, height: 32, bgcolor: theme.palette.primary.main }}>
+                  {getInitial()}
+                </Avatar>
+              </IconButton>
+            </Box>
+          )}
+
+          {/* Auth Buttons (Desktop) - For non-authenticated users */}
+          {!isMobile && !isAuthenticated && (
             <Box>
               <Button
                 variant="contained"
@@ -217,13 +401,69 @@ export default function Navbar({ toggleColorMode, mode }) {
               </Button>
             </Box>
           )}
+
+          {/* Desktop User Info - For authenticated users */}
+          {!isMobile && isAuthenticated && (
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <IconButton
+                color="inherit"
+                onClick={toggleColorMode}
+                sx={{ mr: 2 }}
+              >
+                {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+              <Typography variant="body2" sx={{ mr: 1 }}>
+                {userName}
+              </Typography>
+              <IconButton
+                color="inherit"
+                onClick={handleMenuOpen}
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+              >
+                <Avatar sx={{ width: 32, height: 32, bgcolor: theme.palette.primary.main }}>
+                  {getInitial()}
+                </Avatar>
+              </IconButton>
+            </Box>
+          )}
         </Toolbar>
       </Container>
 
-      {/* Mobile Drawer */}
-      <Drawer anchor="right" open={drawerOpen} onClose={handleDrawerToggle}>
-        {drawer}
+      {/* Drawer - changes side based on authentication status */}
+      <Drawer 
+        anchor={isAuthenticated ? "left" : "right"} 
+        open={drawerOpen} 
+        onClose={handleDrawerToggle}
+      >
+        {isAuthenticated ? authDrawer : publicDrawer}
       </Drawer>
+
+      {/* Mobile user menu */}
+      <Menu
+        id="menu-appbar-mobile"
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => { handleMenuClose(); navigate("/dashboard"); }}>
+          Dashboard
+        </MenuItem>
+        <MenuItem onClick={() => { handleMenuClose(); navigate("/dashboard"); }}>
+          Profile
+        </MenuItem>
+        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+      </Menu>
     </AppBar>
   );
 }

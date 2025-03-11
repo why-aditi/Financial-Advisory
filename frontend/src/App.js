@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import { createTheme, ThemeProvider, CssBaseline, Box } from "@mui/material";
@@ -17,10 +17,30 @@ import Dashboard from "./Components/Dashboard";
 
 function App() {
   const [mode, setMode] = useState("light");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Set document title
   useEffect(() => {
     document.title = "A2K Financial";
+    
+    // Check if user is authenticated
+    const authToken = localStorage.getItem("authToken");
+    setIsAuthenticated(!!authToken);
+  }, []);
+
+  // Listen for auth changes (login/logout)
+  useEffect(() => {
+    const checkAuth = () => {
+      const authToken = localStorage.getItem("authToken");
+      setIsAuthenticated(!!authToken);
+    };
+
+    // Check auth on storage changes (for logout events)
+    window.addEventListener('storage', checkAuth);
+    
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+    };
   }, []);
 
   const theme = useMemo(
@@ -111,9 +131,9 @@ function App() {
           <Navbar toggleColorMode={toggleColorMode} mode={mode} />
           <Box sx={{ flexGrow: 1 }}>
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/login" element={<LogIn />} />
+              <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Home />} />
+              <Route path="/signup" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <SignUp />} />
+              <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LogIn />} />
               <Route path="/form" element={<Form />} />
               <Route path="/forgot-password" element={<ForgotPass />} />
               <Route path="/forgot-user-id" element={<ForgotUserID />} />

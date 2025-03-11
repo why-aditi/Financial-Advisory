@@ -60,6 +60,11 @@ export default function Login() {
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("userId", data.userId);
         localStorage.setItem("userEmail", email);
+        
+        // Store user name in localStorage
+        // If data contains a name property, use it, otherwise extract from email
+        const userName = data.name || data.userName || email.split('@')[0];
+        localStorage.setItem("userName", userName);
 
         console.log("Login successful!");
         navigate("/form"); // Redirect to form page

@@ -8,6 +8,9 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Import routes
+const aiRoutes = require("./routes/aiRoutes");
+
 // Middleware
 app.use(express.json());
 app.use(
@@ -17,6 +20,9 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Mount routes
+app.use("/api", aiRoutes);
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;

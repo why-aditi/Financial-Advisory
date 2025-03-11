@@ -64,7 +64,7 @@ export default function Navbar({ toggleColorMode, mode }) {
           if (response.ok) {
             const data = await response.json();
             setUserData(data.user);
-            
+
             // Update userName if available from API
             if (data.user && data.user.name) {
               setUserName(data.user.name);
@@ -162,14 +162,14 @@ export default function Navbar({ toggleColorMode, mode }) {
       name: "Dashboard",
       path: "/dashboard",
       action: () => navigate("/dashboard"),
-      icon: <DashboardIcon />
+      icon: <DashboardIcon />,
     },
     {
       name: "Profile",
       path: "/profile",
       action: () => navigate("/profile"),
-      icon: <PersonIcon />
-    }
+      icon: <PersonIcon />,
+    },
   ];
 
   // Choose which navigation items to display based on authentication
@@ -192,18 +192,32 @@ export default function Navbar({ toggleColorMode, mode }) {
 
   // Logged in user drawer (left side)
   const authDrawer = (
-    <Box 
-      sx={{ 
-        width: 250, 
-        height: "100%", 
-        display: "flex", 
-        flexDirection: "column" 
-      }} 
+    <Box
+      sx={{
+        width: 250,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
       role="presentation"
     >
-      <Box sx={{ p: 2, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <Box
+        sx={{
+          p: 2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Avatar sx={{ width: 40, height: 40, bgcolor: theme.palette.primary.main, mr: 2 }}>
+          <Avatar
+            sx={{
+              width: 40,
+              height: 40,
+              bgcolor: theme.palette.primary.main,
+              mr: 2,
+            }}
+          >
             {getInitial()}
           </Avatar>
           <Typography variant="subtitle1" sx={{ fontWeight: "medium" }}>
@@ -214,14 +228,14 @@ export default function Navbar({ toggleColorMode, mode }) {
           <CloseIcon />
         </IconButton>
       </Box>
-      
+
       <Divider />
-      
+
       <List sx={{ flexGrow: 1 }}>
         {authNavItems.map((item) => (
-          <ListItem 
-            button 
-            key={item.name} 
+          <ListItem
+            button
+            key={item.name}
             onClick={() => {
               item.action();
               handleDrawerToggle();
@@ -232,7 +246,7 @@ export default function Navbar({ toggleColorMode, mode }) {
           </ListItem>
         ))}
       </List>
-      
+
       <Box sx={{ p: 2 }}>
         <FormControlLabel
           control={
@@ -245,19 +259,19 @@ export default function Navbar({ toggleColorMode, mode }) {
           label={mode === "dark" ? "Dark Mode" : "Light Mode"}
         />
       </Box>
-      
+
       <Divider />
-      
-      <ListItem 
-        button 
+
+      <ListItem
+        button
         onClick={handleLogout}
         sx={{ bgcolor: theme.palette.action.hover }}
       >
         <ListItemIcon>
           <LogoutIcon color="error" />
         </ListItemIcon>
-        <ListItemText 
-          primary="Logout" 
+        <ListItemText
+          primary="Logout"
           primaryTypographyProps={{ color: "error" }}
         />
       </ListItem>
@@ -316,7 +330,10 @@ export default function Navbar({ toggleColorMode, mode }) {
                 <MenuIcon />
               </IconButton>
             )}
-            <RouterLink to={isAuthenticated ? "/dashboard" : "/"} style={{ textDecoration: "none" }}>
+            <RouterLink
+              to={isAuthenticated ? "/dashboard" : "/"}
+              style={{ textDecoration: "none" }}
+            >
               <Typography
                 variant="h6"
                 component="div"
@@ -402,7 +419,13 @@ export default function Navbar({ toggleColorMode, mode }) {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
               >
-                <Avatar sx={{ width: 32, height: 32, bgcolor: theme.palette.primary.main }}>
+                <Avatar
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    bgcolor: theme.palette.primary.main,
+                  }}
+                >
                   {getInitial()}
                 </Avatar>
               </IconButton>
@@ -453,7 +476,13 @@ export default function Navbar({ toggleColorMode, mode }) {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
               >
-                <Avatar sx={{ width: 32, height: 32, bgcolor: theme.palette.primary.main }}>
+                <Avatar
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    bgcolor: theme.palette.primary.main,
+                  }}
+                >
                   {getInitial()}
                 </Avatar>
               </IconButton>
@@ -463,9 +492,9 @@ export default function Navbar({ toggleColorMode, mode }) {
       </Container>
 
       {/* Drawer - changes side based on authentication status */}
-      <Drawer 
-        anchor={isAuthenticated ? "left" : "right"} 
-        open={drawerOpen} 
+      <Drawer
+        anchor={isAuthenticated ? "left" : "right"}
+        open={drawerOpen}
         onClose={handleDrawerToggle}
       >
         {isAuthenticated ? authDrawer : publicDrawer}
@@ -487,13 +516,30 @@ export default function Navbar({ toggleColorMode, mode }) {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={() => { handleMenuClose(); navigate("/dashboard"); }}>
+        <MenuItem
+          onClick={() => {
+            handleMenuClose();
+            navigate("/dashboard");
+          }}
+        >
           Dashboard
         </MenuItem>
-        <MenuItem onClick={() => { handleMenuClose(); navigate("/profile"); }}>
+        <MenuItem
+          onClick={() => {
+            handleMenuClose();
+            navigate("/profile");
+          }}
+        >
           Profile
         </MenuItem>
-        <MenuItem onClick={() => { handleMenuClose(); handleLogout(); }}>Logout</MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleMenuClose();
+            handleLogout();
+          }}
+        >
+          Logout
+        </MenuItem>
       </Menu>
     </AppBar>
   );

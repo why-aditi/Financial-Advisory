@@ -487,7 +487,7 @@ function Dashboard() {
             <Typography
               variant="subtitle1"
               sx={{
-                mb: 0.5,
+                mb: 2,
                 fontWeight: "medium",
                 color: theme.palette.mode === "light" ? "black" : "white",
               }}
@@ -581,7 +581,7 @@ function Dashboard() {
             </Box>
           </Box>
 
-          <Typography variant="body1" paragraph>
+          {/* <Typography variant="body1" paragraph>
             Here's a summary of your account status and recent activities.
           </Typography>
 
@@ -645,7 +645,7 @@ function Dashboard() {
                 </Typography>
               </Box>
             </Grid>
-          </Grid>
+          </Grid> */}
         </CardContent>
       </MotionCard>
     );

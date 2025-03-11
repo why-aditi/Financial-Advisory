@@ -8,10 +8,74 @@ const model = genAI.getGenerativeModel({
 });
 
 const generationConfig = {
-  temperature: 1,
+  temperature: 0.6,
   topP: 0.95,
   topK: 40,
   maxOutputTokens: 8192,
+  responseMimeType: "application/json",
+  responseSchema: {
+    type: "object",
+    properties: {
+      "Personalized Advice": {
+        type: "string",
+      },
+      "Understanding Your Situation": {
+        type: "array",
+        items: {
+          type: "string",
+        },
+      },
+      "Pros & Cons for You": {
+        type: "object",
+        properties: {
+          Pros: {
+            type: "array",
+            items: {
+              type: "string",
+            },
+          },
+          Cons: {
+            type: "array",
+            items: {
+              type: "string",
+            },
+          },
+        },
+        required: ["Pros", "Cons"],
+      },
+      "Is it right for you?": {
+        type: "array",
+        items: {
+          type: "string",
+        },
+      },
+      "Step by step strategy": {
+        type: "array",
+        items: {
+          type: "string",
+        },
+      },
+      "Next steps": {
+        type: "array",
+        items: {
+          type: "string",
+        },
+      },
+      "Important Considerations": {
+        type: "array",
+        items: {
+          type: "string",
+        },
+      },
+    },
+    required: [
+      "Personalized Advice",
+      "Understanding Your Situation",
+      "Pros & Cons for You",
+      "Is it right for you?",
+      "Step by step strategy",
+    ],
+  },
 };
 
 async function getInvestmentAdvice(userData) {

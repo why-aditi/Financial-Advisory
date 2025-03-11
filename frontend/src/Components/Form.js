@@ -1,116 +1,103 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, FormControl } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import useForm from "../hooks/useForm";
+import api from "../services/api";
+import LoadingSpinner from "./LoadingSpinner";
+import ErrorMessage from "./ErrorMessage";
 import "./Form.css";
 
+const initialValues = {
+  age: "",
+  maritalStatus: "",
+  dependents: "",
+  employmentStatus: "",
+  annualIncome: "",
+  extraIncome: "",
+  financialGoals: "",
+  shortTermGoals: "",
+  financialGoal: "",
+  savings: "",
+  contribution: "",
+  investments: "",
+  riskTolerance: "",
+  experience: "",
+  debtLiabilities: "",
+  currentDebts: "",
+  outstandingDebts: "",
+  totalOutstandingDebts: "",
+  insurance: "",
+  insuranceCoverage: "",
+  insurancePolicies: "",
+};
+
+const validationRules = {
+  age: { required: true, min: 18 },
+  maritalStatus: { required: true },
+  dependents: { required: true },
+  employmentStatus: { required: true },
+  annualIncome: { required: true },
+  financialGoals: { required: true },
+  savings: { required: true },
+  investments: { required: true },
+  riskTolerance: { required: true },
+};
+
 export default function Form() {
-  const [formData, setFormData] = useState({
-    age: "",
-    maritalStatus: "",
-    dependents: "",
-    employmentStatus: "",
-    annualIncome: "",
-    extraIncome: "",
-    financialGoals: "",
-    shortTermGoals: "",
-    financialGoal: "",
-    savings: "",
-    contribution: "",
-    investments: "",
-    riskTolerance: "",
-    experience: "",
-    debtLiabilities: "",
-    currentDebts: "",
-    outstandingDebts: "",
-    totalOutstandingDebts: "",
-    insurance: "",
-    insuranceCoverage: "",
-    insurancePolicies: "",
-  });
-
-  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
-
-  const handleButtonClick = (field, value) => {
-    setFormData({ ...formData, [field]: value });
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const validateForm = () => {
-    let formErrors = {};
-    if (!formData.age || isNaN(formData.age) || formData.age <= 0) {
-      formErrors.age = "Please enter a valid age.";
-    }
-    if (!formData.annualIncome || isNaN(formData.annualIncome)) {
-      formErrors.annualIncome = "Please enter a valid annual income.";
-    }
-    setErrors(formErrors);
-    return Object.keys(formErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      alert("Please fix the errors before submitting.");
-      return;
-    }
-
-    const allFieldsFilled = Object.values(formData).every(
-      (value) => value !== ""
-    );
-    if (!allFieldsFilled) {
-      alert("Please fill out all fields before submitting.");
-      return;
-    }
-
+  const {
+    values,
+    errors,
+    isSubmitting,
+    submitError,
+    handleChange,
+    handleSubmit,
+    validate,
+    setValues
+  } = useForm(initialValues, async (formData) => {
     const email = localStorage.getItem("userEmail");
     if (!email) {
-      alert("No user email found. Please sign up again.");
-      navigate("/signup");
-      return;
+      throw new Error("No user email found. Please sign up again.");
     }
+    
+    const response = await api.submitForm({ email, ...formData });
+    navigate(`/dashboard/${email}`);
+  });
 
-    console.log("Submitting form data:", { email, formData }); // Log the data
+  const handleButtonClick = (field, value) => {
+    setValues({ ...values, [field]: value });
+  };
 
-    try {
-      const response = await fetch("http://localhost:5000/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, formData }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        alert(data.msg);
-        navigate(`/dashboard/${email}`);
-      } else {
-        alert(data.error);
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("Error submitting form");
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (validate(validationRules)) {
+      await handleSubmit(e);
     }
   };
+
+  if (isSubmitting) {
+    return <LoadingSpinner size="large" />;
+  }
 
   return (
     <div className="form-container">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={onSubmit}>
         <h1>Financial Form</h1>
+        
+        {submitError && (
+          <ErrorMessage 
+            message={submitError} 
+            onRetry={() => setValues(initialValues)} 
+          />
+        )}
 
         <label>
           What is your age?
           <input
             type="number"
             name="age"
-            value={formData.age}
-            onChange={handleInputChange}
+            value={values.age}
+            onChange={handleChange}
             placeholder="Age"
           />
           {errors.age && <span className="error">{errors.age}</span>}
@@ -121,20 +108,14 @@ export default function Form() {
           <div className="button-group">
             <Button
               className="button"
-              variant={
-                formData.maritalStatus === "Married" ? "contained" : "outlined"
-              }
+              variant={values.maritalStatus === "Married" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("maritalStatus", "Married")}
             >
               Married
             </Button>
             <Button
               className="button"
-              variant={
-                formData.maritalStatus === "Unmarried"
-                  ? "contained"
-                  : "outlined"
-              }
+              variant={values.maritalStatus === "Unmarried" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("maritalStatus", "Unmarried")}
             >
               Unmarried
@@ -147,14 +128,14 @@ export default function Form() {
           <div className="button-group">
             <Button
               className="button"
-              variant={formData.dependents === "Yes" ? "contained" : "outlined"}
+              variant={values.dependents === "Yes" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("dependents", "Yes")}
             >
               Yes
             </Button>
             <Button
               className="button"
-              variant={formData.dependents === "No" ? "contained" : "outlined"}
+              variant={values.dependents === "No" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("dependents", "No")}
             >
               No
@@ -167,48 +148,28 @@ export default function Form() {
           <div className="button-group">
             <Button
               className="button"
-              variant={
-                formData.employmentStatus === "Employed"
-                  ? "contained"
-                  : "outlined"
-              }
+              variant={values.employmentStatus === "Employed" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("employmentStatus", "Employed")}
             >
               Employed
             </Button>
             <Button
               className="button"
-              variant={
-                formData.employmentStatus === "Self-Employed"
-                  ? "contained"
-                  : "outlined"
-              }
-              onClick={() =>
-                handleButtonClick("employmentStatus", "Self-Employed")
-              }
+              variant={values.employmentStatus === "Self-Employed" ? "contained" : "outlined"}
+              onClick={() => handleButtonClick("employmentStatus", "Self-Employed")}
             >
               Self-Employed
             </Button>
             <Button
               className="button"
-              variant={
-                formData.employmentStatus === "Unemployed"
-                  ? "contained"
-                  : "outlined"
-              }
-              onClick={() =>
-                handleButtonClick("employmentStatus", "Unemployed")
-              }
+              variant={values.employmentStatus === "Unemployed" ? "contained" : "outlined"}
+              onClick={() => handleButtonClick("employmentStatus", "Unemployed")}
             >
               Unemployed
             </Button>
             <Button
               className="button"
-              variant={
-                formData.employmentStatus === "Retired"
-                  ? "contained"
-                  : "outlined"
-              }
+              variant={values.employmentStatus === "Retired" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("employmentStatus", "Retired")}
             >
               Retired
@@ -221,8 +182,8 @@ export default function Form() {
           <input
             type="text"
             name="annualIncome"
-            value={formData.annualIncome}
-            onChange={handleInputChange}
+            value={values.annualIncome}
+            onChange={handleChange}
             placeholder="Annual Income"
           />
           {errors.annualIncome && (
@@ -235,8 +196,8 @@ export default function Form() {
           <input
             type="text"
             name="extraIncome"
-            value={formData.extraIncome}
-            onChange={handleInputChange}
+            value={values.extraIncome}
+            onChange={handleChange}
             placeholder="Extra Source of Income"
           />
         </label>
@@ -246,8 +207,8 @@ export default function Form() {
           <input
             type="text"
             name="financialGoals"
-            value={formData.financialGoals}
-            onChange={handleInputChange}
+            value={values.financialGoals}
+            onChange={handleChange}
             placeholder="Financial Goals"
           />
         </label>
@@ -257,8 +218,8 @@ export default function Form() {
           <input
             type="text"
             name="shortTermGoals"
-            value={formData.shortTermGoals}
-            onChange={handleInputChange}
+            value={values.shortTermGoals}
+            onChange={handleChange}
             placeholder="Short-term Goals"
           />
         </label>
@@ -268,8 +229,8 @@ export default function Form() {
           <input
             type="text"
             name="financialGoal"
-            value={formData.financialGoal}
-            onChange={handleInputChange}
+            value={values.financialGoal}
+            onChange={handleChange}
             placeholder="Buying a house, start a business, etc."
           />
         </label>
@@ -279,55 +240,35 @@ export default function Form() {
           <div className="button-group">
             <Button
               className="button"
-              variant={
-                formData.savings === "0-1,00,000" ? "contained" : "outlined"
-              }
+              variant={values.savings === "0-1,00,000" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("savings", "0-1,00,000")}
             >
               0-1,00,000
             </Button>
             <Button
               className="button"
-              variant={
-                formData.savings === "1,00,000-10,00,000"
-                  ? "contained"
-                  : "outlined"
-              }
+              variant={values.savings === "1,00,000-10,00,000" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("savings", "1,00,000-10,00,000")}
             >
               1,00,000-10,00,000
             </Button>
             <Button
               className="button"
-              variant={
-                formData.savings === "10,00,000-25,00,000"
-                  ? "contained"
-                  : "outlined"
-              }
-              onClick={() =>
-                handleButtonClick("savings", "10,00,000-25,00,000")
-              }
+              variant={values.savings === "10,00,000-25,00,000" ? "contained" : "outlined"}
+              onClick={() => handleButtonClick("savings", "10,00,000-25,00,000")}
             >
               10,00,000-25,00,000
             </Button>
             <Button
               className="button"
-              variant={
-                formData.savings === "25,00,000-50,00,000"
-                  ? "contained"
-                  : "outlined"
-              }
-              onClick={() =>
-                handleButtonClick("savings", "25,00,000-50,00,000")
-              }
+              variant={values.savings === "25,00,000-50,00,000" ? "contained" : "outlined"}
+              onClick={() => handleButtonClick("savings", "25,00,000-50,00,000")}
             >
               25,00,000-50,00,000
             </Button>
             <Button
               className="button"
-              variant={
-                formData.savings === "50,00,000+" ? "contained" : "outlined"
-              }
+              variant={values.savings === "50,00,000+" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("savings", "50,00,000+")}
             >
               50,00,000+
@@ -342,55 +283,35 @@ export default function Form() {
           <div className="button-group">
             <Button
               className="button"
-              variant={
-                formData.contribution === "Below 5,000"
-                  ? "contained"
-                  : "outlined"
-              }
+              variant={values.contribution === "Below 5,000" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("contribution", "Below 5,000")}
             >
               Below 5,000
             </Button>
             <Button
               className="button"
-              variant={
-                formData.contribution === "5,000-10,000"
-                  ? "contained"
-                  : "outlined"
-              }
+              variant={values.contribution === "5,000-10,000" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("contribution", "5,000-10,000")}
             >
               5,000-10,000
             </Button>
             <Button
               className="button"
-              variant={
-                formData.contribution === "10,000-25,000"
-                  ? "contained"
-                  : "outlined"
-              }
+              variant={values.contribution === "10,000-25,000" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("contribution", "10,000-25,000")}
             >
               10,000-25,000
             </Button>
             <Button
               className="button"
-              variant={
-                formData.contribution === "25,000-50,000"
-                  ? "contained"
-                  : "outlined"
-              }
+              variant={values.contribution === "25,000-50,000" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("contribution", "25,000-50,000")}
             >
               25,000-50,000
             </Button>
             <Button
               className="button"
-              variant={
-                formData.contribution === "Above 50,000"
-                  ? "contained"
-                  : "outlined"
-              }
+              variant={values.contribution === "Above 50,000" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("contribution", "Above 50,000")}
             >
               Above 50,000
@@ -403,8 +324,8 @@ export default function Form() {
           <input
             type="text"
             name="investments"
-            value={formData.investments}
-            onChange={handleInputChange}
+            value={values.investments}
+            onChange={handleChange}
             placeholder="Investments"
           />
         </label>
@@ -414,31 +335,21 @@ export default function Form() {
           <div className="button-group">
             <Button
               className="button"
-              variant={
-                formData.riskTolerance === "Conservative"
-                  ? "contained"
-                  : "outlined"
-              }
+              variant={values.riskTolerance === "Conservative" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("riskTolerance", "Conservative")}
             >
               Conservative
             </Button>
             <Button
               className="button"
-              variant={
-                formData.riskTolerance === "Moderate" ? "contained" : "outlined"
-              }
+              variant={values.riskTolerance === "Moderate" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("riskTolerance", "Moderate")}
             >
               Moderate
             </Button>
             <Button
               className="button"
-              variant={
-                formData.riskTolerance === "Aggressive"
-                  ? "contained"
-                  : "outlined"
-              }
+              variant={values.riskTolerance === "Aggressive" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("riskTolerance", "Aggressive")}
             >
               Aggressive
@@ -451,38 +362,28 @@ export default function Form() {
           <div className="button-group">
             <Button
               className="button"
-              variant={
-                formData.experience === "None" ? "contained" : "outlined"
-              }
+              variant={values.experience === "None" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("experience", "None")}
             >
               None
             </Button>
             <Button
               className="button"
-              variant={
-                formData.experience === "Basic" ? "contained" : "outlined"
-              }
+              variant={values.experience === "Basic" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("experience", "Basic")}
             >
               Basic
             </Button>
             <Button
               className="button"
-              variant={
-                formData.experience === "Intermediate"
-                  ? "contained"
-                  : "outlined"
-              }
+              variant={values.experience === "Intermediate" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("experience", "Intermediate")}
             >
               Intermediate
             </Button>
             <Button
               className="button"
-              variant={
-                formData.experience === "Advanced" ? "contained" : "outlined"
-              }
+              variant={values.experience === "Advanced" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("experience", "Advanced")}
             >
               Advanced
@@ -495,18 +396,14 @@ export default function Form() {
           <div className="button-group">
             <Button
               className="button"
-              variant={
-                formData.debtLiabilities === "Yes" ? "contained" : "outlined"
-              }
+              variant={values.debtLiabilities === "Yes" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("debtLiabilities", "Yes")}
             >
               Yes
             </Button>
             <Button
               className="button"
-              variant={
-                formData.debtLiabilities === "No" ? "contained" : "outlined"
-              }
+              variant={values.debtLiabilities === "No" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("debtLiabilities", "No")}
             >
               No
@@ -519,8 +416,8 @@ export default function Form() {
           <input
             type="text"
             name="currentDebts"
-            value={formData.currentDebts}
-            onChange={handleInputChange}
+            value={values.currentDebts}
+            onChange={handleChange}
             placeholder="Current Debts"
           />
         </label>
@@ -530,8 +427,8 @@ export default function Form() {
           <input
             type="text"
             name="outstandingDebts"
-            value={formData.outstandingDebts}
-            onChange={handleInputChange}
+            value={values.outstandingDebts}
+            onChange={handleChange}
             placeholder="Outstanding Debts Amount"
           />
         </label>
@@ -541,8 +438,8 @@ export default function Form() {
           <input
             type="text"
             name="totalOutstandingDebts"
-            value={formData.totalOutstandingDebts}
-            onChange={handleInputChange}
+            value={values.totalOutstandingDebts}
+            onChange={handleChange}
             placeholder="Total Outstanding Debts"
           />
         </label>
@@ -552,14 +449,14 @@ export default function Form() {
           <div className="button-group">
             <Button
               className="button"
-              variant={formData.insurance === "Yes" ? "contained" : "outlined"}
+              variant={values.insurance === "Yes" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("insurance", "Yes")}
             >
               Yes
             </Button>
             <Button
               className="button"
-              variant={formData.insurance === "No" ? "contained" : "outlined"}
+              variant={values.insurance === "No" ? "contained" : "outlined"}
               onClick={() => handleButtonClick("insurance", "No")}
             >
               No
@@ -572,8 +469,8 @@ export default function Form() {
           <input
             type="text"
             name="insuranceCoverage"
-            value={formData.insuranceCoverage}
-            onChange={handleInputChange}
+            value={values.insuranceCoverage}
+            onChange={handleChange}
             placeholder="Insurance Coverage"
           />
         </label>
@@ -583,14 +480,20 @@ export default function Form() {
           <input
             type="text"
             name="insurancePolicies"
-            value={formData.insurancePolicies}
-            onChange={handleInputChange}
+            value={values.insurancePolicies}
+            onChange={handleChange}
             placeholder="Number of Policies"
           />
         </label>
 
-        <Button variant="contained" type="submit">
-          Submit
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={isSubmitting}
+          className="submit-button"
+        >
+          {isSubmitting ? "Submitting..." : "Submit"}
         </Button>
       </form>
     </div>

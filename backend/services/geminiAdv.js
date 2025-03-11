@@ -85,8 +85,7 @@ async function getInvestmentAdvice(userData) {
         Consider the user's background, interests, and risk tolerance. Provide clear, concise, 
         and practical advice for the selected investment option, balancing risk, returns, 
         and long-term viability. If the user's background is unknown, give well-rounded 
-        advice suitable for different risk appetites. If asked anything unrelated, politely 
-        redirect the conversation to investments.
+        advice suitable for different risk appetites.
   
         User Data: ${JSON.stringify(userData)}
       `;

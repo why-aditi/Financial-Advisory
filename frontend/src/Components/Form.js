@@ -131,7 +131,8 @@ function Form() {
     const token = localStorage.getItem("authToken");
 
     try {
-      const response = await fetch("http://localhost:5000/submit-form", {
+      // Submit form data
+      const formResponse = await fetch("http://localhost:5000/submit-form", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -140,16 +141,37 @@ function Form() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log("Form submitted successfully!");
-        navigate("/dashboard");
-      } else {
-        console.error(data.msg || "Error submitting form");
+      if (!formResponse.ok) {
+        const data = await formResponse.json();
+        throw new Error(data.msg || "Error submitting form");
       }
+
+      // Call goal analysis API
+      const goalResponse = await fetch(
+        "http://localhost:5000/api/goal-analysis",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (!goalResponse.ok) {
+        console.error("Error getting goal analysis");
+      } else {
+        const goalData = await goalResponse.json();
+        console.log(goalData);
+        // Store goal analysis in localStorage for dashboard use
+        localStorage.setItem("goalAnalysis", JSON.stringify(goalData.analysis));
+      }
+
+      console.log("Form submitted successfully!");
+      navigate("/dashboard");
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Error:", error.message);
     } finally {
       setIsLoading(false);
     }

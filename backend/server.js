@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const User = require("./models/User");
+const FormEntry = require("./models/formEntry");
+
 require("dotenv").config();
 
 const app = express();
@@ -29,16 +32,11 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 mongoose
-  .connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(MONGODB_URI)
   .then(() => console.log("Connected to MongoDB"))
   .catch((error) => console.error("Error connecting to MongoDB:", error));
 
 // Import models
-const User = require("./models/User");
-const FormEntry = require("./models/formEntry");
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {

@@ -18,7 +18,10 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 
-const MotionCard = motion.create(Card);
+const MotionCard = motion(Card);
+
+// Global variable to store investment advice data
+let data = null;
 
 // Helper functions to calculate financial totals
 function calculateTotalAssets(formData) {
@@ -81,6 +84,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userName, setUserName] = useState("");
+  const [investmentAdvice, setInvestmentAdvice] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -389,10 +393,45 @@ function Dashboard() {
           throw new Error("Failed to get investment advice");
         }
 
-        const data = await response.json();
+        // Store the response in the global data variable
+        data = await response.json();
+        
+        // Parse data.advice as JSON and extract fields
+        const myObj = JSON.parse(data.advice);
+        console.log("Parsed advice data:", myObj);
+        
+        // Extract data into separate variables in the specified sequence
+        const personalizedAdvice = myObj["Personalized Advice"] || "";
+        const understandingSituation = myObj["Understanding Your Situation"] || [];
+        const prosAndCons = myObj["Pros & Cons for You"] || {};
+        const isItRightForYou = myObj["Is it right for you?"] || [];
+        const stepByStepStrategy = myObj["Step by step strategy"] || [];
+        const nextSteps = myObj["Next steps"] || [];
+        const importantConsiderations = myObj["Important Considerations"] || [];
+        
+        // Log each extracted field for debugging
+        console.log("Personalized Advice:", personalizedAdvice);
+        console.log("Understanding Your Situation:", understandingSituation);
+        console.log("Pros & Cons for You:", prosAndCons);
+        console.log("Is it right for you?:", isItRightForYou);
+        console.log("Step by step strategy:", stepByStepStrategy);
+        console.log("Next steps:", nextSteps);
+        console.log("Important Considerations:", importantConsiderations);
+        
+        // Create adviceData object with extracted fields in the specified sequence
+        const adviceData = {
+          investmentType: optionName,
+          "Personalized Advice": personalizedAdvice,
+          "Understanding Your Situation": understandingSituation,
+          "Pros & Cons for You": prosAndCons,
+          "Is it right for you?": isItRightForYou,
+          "Step by step strategy": stepByStepStrategy,
+          "Next steps": nextSteps,
+          "Important Considerations": importantConsiderations
+        };
+        
         setLoading(false);
-        // You can handle the response here, e.g., show it in a dialog or notification
-        console.log("Investment advice:", data.advice);
+        setInvestmentAdvice(adviceData);
       } catch (error) {
         console.error("Error getting investment advice:", error);
         setError(error.message);
@@ -648,9 +687,8 @@ function Dashboard() {
               variant="contained"
               color="primary"
               onClick={handleEditForm}
-              size="large"
             >
-              Complete Your Assessment
+              Complete Assessment
             </Button>
           </CardContent>
         </MotionCard>
@@ -666,146 +704,298 @@ function Dashboard() {
         sx={{ borderRadius: 2, height: "100%" }}
       >
         <CardContent>
-          <Typography variant="h5" gutterBottom color="primary">
-            Your Financial Summary
-          </Typography>
-          <Divider sx={{ mb: 3 }} />
-          <Typography variant="body1" paragraph>
-            Based on the information you provided, here's a summary of your
-            financial situation.
-          </Typography>
-
-          <Grid container spacing={3}>
-            {/* Assets Section */}
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6" gutterBottom color="primary">
-                Assets
+          {investmentAdvice ? (
+            <>
+              <Typography 
+                variant="h5" 
+                color="primary" 
+                gutterBottom
+                sx={{ 
+                  fontWeight: 500,
+                  mb: 2,
+                  borderBottom: `1px solid ${theme.palette.primary.light}`,
+                  pb: 1
+                }}
+              >
+                Investment Recommendations for {investmentAdvice.investmentType}
               </Typography>
-              <Box sx={{ pl: 2 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    mb: 1,
-                  }}
+              
+              <Paper 
+                elevation={0} 
+                sx={{ 
+                  p: 3, 
+                  bgcolor: theme.palette.mode === 'light' ? 'rgba(25, 118, 210, 0.05)' : 'rgba(99, 102, 241, 0.05)',
+                  borderRadius: 2,
+                  border: `1px solid ${theme.palette.mode === 'light' ? 'rgba(25, 118, 210, 0.2)' : 'rgba(99, 102, 241, 0.2)'}`,
+                }}
+              >
+                
+                {/* Personalized Advice Section */}
+                {investmentAdvice["Personalized Advice"] && (
+                  <Box sx={{ mb: 4 }}>
+                    <Typography 
+                      variant="h6" 
+                      fontWeight="600" 
+                      gutterBottom
+                    >
+                      Personalized Advice
+                    </Typography>
+                    <Typography variant="body1" paragraph>
+                      {investmentAdvice["Personalized Advice"]}
+                    </Typography>
+                  </Box>
+                )}
+                
+                {/* Understanding Your Situation Section */}
+                {investmentAdvice["Understanding Your Situation"] && investmentAdvice["Understanding Your Situation"].length > 0 && (
+                  <Box sx={{ mb: 4 }}>
+                    <Typography 
+                      variant="h6" 
+                      fontWeight="600" 
+                      gutterBottom
+                    >
+                      Understanding Your Situation
+                    </Typography>
+                    <Box component="ul" sx={{ pl: 4 }}>
+                      {Array.isArray(investmentAdvice["Understanding Your Situation"]) ? (
+                        investmentAdvice["Understanding Your Situation"].map((situation, index) => (
+                          <Box component="li" key={index} sx={{ mb: 0.5 }}>
+                            <Typography variant="body1">{situation}</Typography>
+                          </Box>
+                        ))
+                      ) : (
+                        <Box component="li" sx={{ mb: 0.5 }}>
+                          <Typography variant="body1">{investmentAdvice["Understanding Your Situation"]}</Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  </Box>
+                )}
+                
+                {/* Pros & Cons Section */}
+                {investmentAdvice["Pros & Cons for You"] && (
+                  <Box sx={{ mb: 4 }}>
+                    <Typography 
+                      variant="h6" 
+                      fontWeight="600" 
+                      gutterBottom
+                    >
+                      Pros & Cons for You
+                    </Typography>
+                    
+                    {/* Check if Pros & Cons is an object with Pros and Cons properties */}
+                    {investmentAdvice["Pros & Cons for You"].Pros && (
+                      <>
+                        <Typography variant="subtitle1" fontWeight="600" gutterBottom>
+                          Pros:
+                        </Typography>
+                        <Box component="ul" sx={{ pl: 4, mb: 2 }}>
+                          {Array.isArray(investmentAdvice["Pros & Cons for You"].Pros) ? (
+                            investmentAdvice["Pros & Cons for You"].Pros.map((pro, index) => (
+                              <Box component="li" key={index} sx={{ mb: 0.5 }}>
+                                <Typography variant="body1">{pro}</Typography>
+                              </Box>
+                            ))
+                          ) : (
+                            <Box component="li" sx={{ mb: 0.5 }}>
+                              <Typography variant="body1">{investmentAdvice["Pros & Cons for You"].Pros}</Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      </>
+                    )}
+                    
+                    {investmentAdvice["Pros & Cons for You"].Cons && (
+                      <>
+                        <Typography variant="subtitle1" fontWeight="600" gutterBottom>
+                          Cons:
+                        </Typography>
+                        <Box component="ul" sx={{ pl: 4 }}>
+                          {Array.isArray(investmentAdvice["Pros & Cons for You"].Cons) ? (
+                            investmentAdvice["Pros & Cons for You"].Cons.map((con, index) => (
+                              <Box component="li" key={index} sx={{ mb: 0.5 }}>
+                                <Typography variant="body1">{con}</Typography>
+                              </Box>
+                            ))
+                          ) : (
+                            <Box component="li" sx={{ mb: 0.5 }}>
+                              <Typography variant="body1">{investmentAdvice["Pros & Cons for You"].Cons}</Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      </>
+                    )}
+                    
+                    {/* If Pros & Cons is not an object with Pros and Cons properties, display it as is */}
+                    {!investmentAdvice["Pros & Cons for You"].Pros && !investmentAdvice["Pros & Cons for You"].Cons && (
+                      <Typography variant="body1" paragraph>
+                        {typeof investmentAdvice["Pros & Cons for You"] === 'string' 
+                          ? investmentAdvice["Pros & Cons for You"] 
+                          : JSON.stringify(investmentAdvice["Pros & Cons for You"], null, 2)}
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+                
+                {/* Is it Right for You Section */}
+                {investmentAdvice["Is it right for you?"]  && (
+                  <Box sx={{ mb: 4 }}>
+                    <Typography 
+                      variant="h6" 
+                      fontWeight="600" 
+                      gutterBottom
+                    >
+                      Is it Right for You?
+                    </Typography>
+                    <Typography variant="body1" paragraph>
+                      {Array.isArray(investmentAdvice["Is it right for you?"]) 
+                        ? investmentAdvice["Is it right for you?"][0] 
+                        : investmentAdvice["Is it right for you?"]}
+                    </Typography>
+                  </Box>
+                )}
+                
+                {/* Step by Step Strategy Section */}
+                {investmentAdvice["Step by step strategy"] && investmentAdvice["Step by step strategy"].length > 0 && (
+                  <Box sx={{ mb: 4 }}>
+                    <Typography 
+                      variant="h6" 
+                      fontWeight="600" 
+                      gutterBottom
+                    >
+                      Step by Step Strategy
+                    </Typography>
+                    <Box component="ol" sx={{ pl: 4 }}>
+                      {Array.isArray(investmentAdvice["Step by step strategy"]) ? (
+                        investmentAdvice["Step by step strategy"].map((step, index) => (
+                          <Box component="li" key={index} sx={{ mb: 0.5 }}>
+                            <Typography variant="body1">{step}</Typography>
+                          </Box>
+                        ))
+                      ) : (
+                        <Box component="li" sx={{ mb: 0.5 }}>
+                          <Typography variant="body1">{investmentAdvice["Step by step strategy"]}</Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  </Box>
+                )}
+                
+                {/* Next Steps Section */}
+                {investmentAdvice["Next steps"] && investmentAdvice["Next steps"].length > 0 && (
+                  <Box sx={{ mb: 4 }}>
+                    <Typography 
+                      variant="h6" 
+                      fontWeight="600" 
+                      gutterBottom
+                    >
+                      Next Steps
+                    </Typography>
+                    <Box component="ol" sx={{ pl: 4 }}>
+                      {Array.isArray(investmentAdvice["Next steps"]) ? (
+                        investmentAdvice["Next steps"].map((step, index) => (
+                          <Box component="li" key={index} sx={{ mb: 0.5 }}>
+                            <Typography variant="body1">{step}</Typography>
+                          </Box>
+                        ))
+                      ) : (
+                        <Box component="li" sx={{ mb: 0.5 }}>
+                          <Typography variant="body1">{investmentAdvice["Next steps"]}</Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  </Box>
+                )}
+                
+                {/* Important Considerations Section */}
+                {investmentAdvice["Important Considerations"] && investmentAdvice["Important Considerations"].length > 0 && (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography 
+                      variant="h6" 
+                      fontWeight="600" 
+                      gutterBottom
+                    >
+                      Important Considerations
+                    </Typography>
+                    <Box component="ul" sx={{ pl: 4 }}>
+                      {Array.isArray(investmentAdvice["Important Considerations"]) ? (
+                        investmentAdvice["Important Considerations"].map((consideration, index) => (
+                          <Box component="li" key={index} sx={{ mb: 0.5 }}>
+                            <Typography variant="body1">{consideration}</Typography>
+                          </Box>
+                        ))
+                      ) : (
+                        <Box component="li" sx={{ mb: 0.5 }}>
+                          <Typography variant="body1">{investmentAdvice["Important Considerations"]}</Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  </Box>
+                )}
+                
+                {/* If no structured data is available, display raw data */}
+                {!investmentAdvice["Personalized Advice"] && 
+                 !investmentAdvice["Understanding Your Situation"] && 
+                 !investmentAdvice["Pros & Cons for You"] && 
+                 !investmentAdvice["Is it right for you?"] && 
+                 !investmentAdvice["Step by step strategy"] && 
+                 !investmentAdvice["Next steps"] && 
+                 !investmentAdvice["Important Considerations"] && 
+                 data && data.advice && (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="body1" paragraph sx={{ whiteSpace: 'pre-line' }}>
+                      {typeof data.advice === 'string' 
+                        ? data.advice 
+                        : JSON.stringify(data.advice, null, 2)}
+                    </Typography>
+                  </Box>
+                )}
+              </Paper>
+              
+              <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                <Button 
+                  size="small" 
+                  variant="outlined" 
+                  color="primary"
+                  onClick={() => setInvestmentAdvice(null)}
                 >
-                  <Typography variant="body2" color="textSecondary">
-                    Primary Residence:
-                  </Typography>
-                  <Typography variant="body1">
-                    ${formData.primaryResidence || "0"}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    mb: 1,
-                  }}
-                >
-                  <Typography variant="body2" color="textSecondary">
-                    Retirement Accounts:
-                  </Typography>
-                  <Typography variant="body1">
-                    ${formData.retirementAccounts || "0"}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    mb: 1,
-                  }}
-                >
-                  <Typography variant="body2" color="textSecondary">
-                    Investment Accounts:
-                  </Typography>
-                  <Typography variant="body1">
-                    ${formData.investmentAccounts || "0"}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    mb: 1,
-                  }}
-                >
-                  <Typography variant="body2" color="textSecondary">
-                    Cash Accounts:
-                  </Typography>
-                  <Typography variant="body1">
-                    ${formData.cashAccounts || "0"}
-                  </Typography>
-                </Box>
+                  New Recommendation
+                </Button>
               </Box>
-            </Grid>
-
-            {/* Liabilities Section */}
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6" gutterBottom color="error">
-                Liabilities
+            </>
+          ) : (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                textAlign: "center",
+                py: 4,
+              }}
+            >
+              <Typography variant="h5" gutterBottom>
+                Get Investment Advice
               </Typography>
-              <Box sx={{ pl: 2 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    mb: 1,
-                  }}
-                >
-                  <Typography variant="body2" color="textSecondary">
-                    Mortgage:
-                  </Typography>
-                  <Typography variant="body1">
-                    ${formData.mortgage || "0"}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    mb: 1,
-                  }}
-                >
-                  <Typography variant="body2" color="textSecondary">
-                    Car Loans:
-                  </Typography>
-                  <Typography variant="body1">
-                    ${formData.carLoans || "0"}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    mb: 1,
-                  }}
-                >
-                  <Typography variant="body2" color="textSecondary">
-                    Credit Card Debt:
-                  </Typography>
-                  <Typography variant="body1">
-                    ${formData.creditCardDebt || "0"}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    mb: 1,
-                  }}
-                >
-                  <Typography variant="body2" color="textSecondary">
-                    Student Loans:
-                  </Typography>
-                  <Typography variant="body1">
-                    ${formData.studentLoans || "0"}
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
-          </Grid>
+              <Typography
+                variant="body1"
+                paragraph
+                sx={{ maxWidth: "600px", mx: "auto", mb: 2 }}
+              >
+                Select any investment option from the icons above to receive personalized
+                investment advice and recommendations based on your financial profile.
+              </Typography>
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                sx={{ maxWidth: "500px" }}
+              >
+                Our system will analyze your financial data and provide tailored advice
+                for your selected investment type.
+              </Typography>
+            </Box>
+          )}
         </CardContent>
       </MotionCard>
     );

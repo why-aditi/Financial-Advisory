@@ -35,13 +35,14 @@ export default function Navbar({ toggleColorMode, mode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [userName, setUserName] = useState("");
+  const [userData, setUserData] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Check authentication status when component mounts
+  // Check authentication status and fetch user data when component mounts
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
     const email = localStorage.getItem("userEmail");
@@ -49,7 +50,35 @@ export default function Navbar({ toggleColorMode, mode }) {
     setIsAuthenticated(!!authToken);
     setUserEmail(email || "");
     setUserName(name || "");
-  }, [location]); // Re-check when location changes
+
+    // Fetch user data if authenticated
+    if (authToken) {
+      const fetchUserData = async () => {
+        try {
+          const response = await fetch("http://localhost:5000/user-profile", {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setUserData(data.user);
+            
+            // Update userName if available from API
+            if (data.user && data.user.name) {
+              setUserName(data.user.name);
+              localStorage.setItem("userName", data.user.name);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+
+      fetchUserData();
+    }
+  }, [location]); // Re-fetch when location changes
 
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
@@ -71,12 +100,16 @@ export default function Navbar({ toggleColorMode, mode }) {
     setIsAuthenticated(false);
     setUserEmail("");
     setUserName("");
+    setUserData(null);
     handleMenuClose();
     navigate("/");
   };
 
   // Get the first letter of user's name for the avatar
   const getInitial = () => {
+    if (userData?.name) {
+      return userData.name.charAt(0).toUpperCase();
+    }
     if (userName && userName.length > 0) {
       return userName.charAt(0).toUpperCase();
     }
@@ -174,7 +207,7 @@ export default function Navbar({ toggleColorMode, mode }) {
             {getInitial()}
           </Avatar>
           <Typography variant="subtitle1" sx={{ fontWeight: "medium" }}>
-            {userName}
+            {userData?.name || userName || "User"}
           </Typography>
         </Box>
         <IconButton onClick={handleDrawerToggle}>

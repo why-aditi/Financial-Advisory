@@ -80,7 +80,7 @@ function Form() {
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (!token) {
-      alert("Please log in to access this page");
+      console.error("Please log in to access this page");
       navigate("/login");
     }
 
@@ -143,14 +143,13 @@ function Form() {
       const data = await response.json();
 
       if (response.ok) {
-        alert("Form submitted successfully!");
+        console.log("Form submitted successfully!");
         navigate("/dashboard");
       } else {
-        alert(data.msg || "Error submitting form");
+        console.error(data.msg || "Error submitting form");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("Error submitting form");
     } finally {
       setIsLoading(false);
     }

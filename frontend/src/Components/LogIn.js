@@ -38,9 +38,6 @@ export default function Login() {
     navigate("/forgot-password");
   };
 
-  const handleForgotUserID = () => {
-    navigate("/forgot-user-id");
-  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -67,7 +64,7 @@ export default function Login() {
         localStorage.setItem("userName", userName);
 
         console.log("Login successful!");
-        navigate("/form"); // Redirect to form page
+        navigate("/dashboard"); // Redirect to dashboard page
       } else {
         console.error(data.msg || "Login failed");
       }
@@ -131,6 +128,12 @@ export default function Login() {
                         </InputAdornment>
                       ),
                     }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && email && password) {
+                        e.preventDefault();
+                        handleLogin(e);
+                      }
+                    }}
                   />
                 </Box>
                 <Box mb={3}>
@@ -160,25 +163,22 @@ export default function Login() {
                         </InputAdornment>
                       ),
                     }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && email && password) {
+                        e.preventDefault();
+                        handleLogin(e);
+                      }
+                    }}
                   />
                 </Box>
 
                 <Box
                   sx={{
                     display: "flex",
-                    justifyContent: "space-between",
+                    justifyContent: "flex-end",
                     mb: 3,
                   }}
                 >
-                  <Link
-                    component="button"
-                    onClick={handleForgotUserID}
-                    variant="body2"
-                    color="primary"
-                    sx={{ textDecoration: "none" }}
-                  >
-                    Forgot User ID?
-                  </Link>
                   <Link
                     component="button"
                     onClick={handleForgotPassword}

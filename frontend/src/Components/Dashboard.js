@@ -99,7 +99,7 @@ function Dashboard() {
     localStorage.removeItem("userId");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userName");
-    navigate("/login");
+    navigate("/");
   };
 
   if (loading) {
@@ -155,295 +155,292 @@ function Dashboard() {
     );
   }
 
-  return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <MotionPaper
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        elevation={3}
-        sx={{ p: { xs: 2, md: 4 }, borderRadius: 2, mb: 4 }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 4,
-          }}
-        >
-          <Typography variant="h4" component="h1" gutterBottom color="primary">
-            Welcome, {userData?.name || userName || "User"}!
+  // Content for left column
+  const LeftColumn = () => (
+    <MotionCard
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5 }}
+      elevation={2}
+      sx={{ 
+        height: "100%", 
+        borderRadius: 2,
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
+      <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+        <Box sx={{ mb: 3, textAlign: "center" }}>
+          <Typography variant="h5" gutterBottom color="primary">
+            Quick Navigation
           </Typography>
-          <Button variant="outlined" color="primary" onClick={handleLogout}>
+          <Divider />
+        </Box>
+        
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 'auto' }}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={handleEditForm}
+            fullWidth
+          >
+            Update Financial Info
+          </Button>
+          <Button 
+            variant="outlined" 
+            color="primary" 
+            onClick={() => navigate('/profile')}
+            fullWidth
+          >
+            View Profile
+          </Button>
+          <Button 
+            variant="outlined" 
+            color="secondary"
+            fullWidth
+          >
+            Financial Reports
+          </Button>
+          <Button 
+            variant="outlined" 
+            color="info"
+            fullWidth
+          >
+            Messages
+          </Button>
+        </Box>
+        
+        <Box sx={{ mt: 4 }}>
+          <Divider sx={{ mb: 2 }} />
+          <Button 
+            variant="outlined" 
+            color="error" 
+            onClick={handleLogout}
+            fullWidth
+          >
             Logout
           </Button>
         </Box>
+      </CardContent>
+    </MotionCard>
+  );
 
-        <Divider sx={{ mb: 4 }} />
+  // Content for top right section
+  const TopRightSection = () => (
+    <MotionCard
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      elevation={2}
+      sx={{ borderRadius: 2, height: "100%" }}
+    >
+      <CardContent>
+        <Box sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}>
+          <Typography variant="h5" gutterBottom color="primary" sx={{ mb: 0 }}>
+            Welcome, {userData?.name || userName || "User"}!
+          </Typography>
+        </Box>
+        
+        <Divider sx={{ mb: 3 }} />
+        
+        <Typography variant="body1" paragraph>
+          Here's a summary of your account status and recent activities.
+        </Typography>
+        
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={4}>
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: `${theme.palette.primary.main}20`, 
+              borderRadius: 2,
+              textAlign: 'center'
+            }}>
+              <Typography variant="h6" color="primary" gutterBottom>
+                {formData ? "Assessment Complete" : "Pending Assessment"}
+              </Typography>
+              <Typography variant="body2">
+                {formData 
+                  ? "Your financial profile is up to date." 
+                  : "Please complete your financial assessment."}
+              </Typography>
+            </Box>
+          </Grid>
+          
+          <Grid item xs={12} sm={6} md={4}>
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: `${theme.palette.secondary.main}20`, 
+              borderRadius: 2,
+              textAlign: 'center'
+            }}>
+              <Typography variant="h6" color="secondary" gutterBottom>
+                Next Review
+              </Typography>
+              <Typography variant="body2">
+                Scheduled for {formData ? "June 2023" : "After assessment"}
+              </Typography>
+            </Box>
+          </Grid>
+          
+          <Grid item xs={12} sm={6} md={4}>
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: `${theme.palette.success.main}20`, 
+              borderRadius: 2,
+              textAlign: 'center'
+            }}>
+              <Typography variant="h6" sx={{ color: theme.palette.success.main }} gutterBottom>
+                Financial Health
+              </Typography>
+              <Typography variant="body2">
+                {formData ? "Good standing" : "Needs assessment"}
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </MotionCard>
+  );
 
-        {!formData ? (
-          <Box sx={{ textAlign: "center", py: 4 }}>
-            <Typography variant="h6" gutterBottom>
+  // Content for bottom right section
+  const BottomRightSection = () => {
+    if (!formData) {
+      return (
+        <MotionCard
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          elevation={2}
+          sx={{ borderRadius: 2, height: "100%" }}
+        >
+          <CardContent sx={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            justifyContent: "center", 
+            alignItems: "center",
+            height: "100%",
+            textAlign: "center"
+          }}>
+            <Typography variant="h5" gutterBottom>
               You haven't submitted your financial assessment form yet.
+            </Typography>
+            <Typography variant="body1" paragraph sx={{ maxWidth: "600px", mx: "auto", mb: 4 }}>
+              To receive personalized financial advice and recommendations, please complete your financial assessment form.
             </Typography>
             <Button
               variant="contained"
               color="primary"
               onClick={handleEditForm}
-              sx={{ mt: 2 }}
+              size="large"
             >
               Complete Your Assessment
             </Button>
-          </Box>
-        ) : (
-          <>
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h5" gutterBottom>
-                Your Financial Summary
+          </CardContent>
+        </MotionCard>
+      );
+    }
+
+    return (
+      <MotionCard
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        elevation={2}
+        sx={{ borderRadius: 2, height: "100%" }}
+      >
+        <CardContent>
+          <Typography variant="h5" gutterBottom color="primary">
+            Your Financial Summary
+          </Typography>
+          <Divider sx={{ mb: 3 }} />
+          <Typography variant="body1" paragraph>
+            Based on the information you provided, here's a summary of your financial situation.
+          </Typography>
+          
+          <Grid container spacing={3}>
+            {/* Assets Section */}
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6" gutterBottom color="primary">
+                Assets
               </Typography>
-              <Typography variant="body1" paragraph>
-                Based on the information you provided, here's a summary of your
-                financial situation.
-              </Typography>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={handleEditForm}
-                sx={{ mb: 3 }}
-              >
-                Edit Your Information
-              </Button>
-            </Box>
-
-            <Grid container spacing={3}>
-              {/* Assets Section */}
-              <Grid item xs={12} md={6}>
-                <MotionCard
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  elevation={2}
-                  sx={{ height: "100%" }}
-                >
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom color="primary">
-                      Assets
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        <Typography variant="body2" color="textSecondary">
-                          Primary Residence:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body1">
-                          ${formData.primaryResidence || "0"}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body2" color="textSecondary">
-                          Vehicles:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body1">
-                          ${formData.vehicles || "0"}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body2" color="textSecondary">
-                          Investments:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body1">
-                          ${formData.investments || "0"}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body2" color="textSecondary">
-                          Cash & Savings:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body1">
-                          ${formData.cashSavings || "0"}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </MotionCard>
-              </Grid>
-
-              {/* Liabilities Section */}
-              <Grid item xs={12} md={6}>
-                <MotionCard
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  elevation={2}
-                  sx={{ height: "100%" }}
-                >
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom color="error">
-                      Liabilities
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        <Typography variant="body2" color="textSecondary">
-                          Mortgage:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body1">
-                          ${formData.mortgage || "0"}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body2" color="textSecondary">
-                          Car Loans:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body1">
-                          ${formData.carLoans || "0"}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body2" color="textSecondary">
-                          Credit Card Debt:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body1">
-                          ${formData.creditCardDebt || "0"}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body2" color="textSecondary">
-                          Student Loans:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body1">
-                          ${formData.studentLoans || "0"}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </MotionCard>
-              </Grid>
-
-              {/* Income Section */}
-              <Grid item xs={12} md={6}>
-                <MotionCard
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  elevation={2}
-                  sx={{ height: "100%" }}
-                >
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom color="success.main">
-                      Income
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        <Typography variant="body2" color="textSecondary">
-                          Monthly Income:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body1">
-                          ${formData.monthlyIncome || "0"}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body2" color="textSecondary">
-                          Annual Income:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body1">
-                          ${formData.annualIncome || "0"}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body2" color="textSecondary">
-                          Additional Income:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body1">
-                          ${formData.extraIncome || "0"}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body2" color="textSecondary">
-                          Monthly Expenses:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body1">
-                          ${formData.monthlyExpenses || "0"}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </MotionCard>
-              </Grid>
-
-              {/* Goals Section */}
-              <Grid item xs={12} md={6}>
-                <MotionCard
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                  elevation={2}
-                  sx={{ height: "100%" }}
-                >
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom color="info.main">
-                      Financial Goals
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      gutterBottom
-                    >
-                      Long-term Goals:
-                    </Typography>
-                    <Typography variant="body1" paragraph>
-                      {formData.financialGoals || "Not specified"}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      gutterBottom
-                    >
-                      Short-term Goals:
-                    </Typography>
-                    <Typography variant="body1" paragraph>
-                      {formData.shortTermGoals || "Not specified"}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      gutterBottom
-                    >
-                      Risk Tolerance:
-                    </Typography>
-                    <Typography variant="body1">
-                      {formData.riskTolerance || "Not specified"}
-                    </Typography>
-                  </CardContent>
-                </MotionCard>
-              </Grid>
+              <Box sx={{ pl: 2 }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                  <Typography variant="body2" color="textSecondary">Primary Residence:</Typography>
+                  <Typography variant="body1">${formData.primaryResidence || "0"}</Typography>
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                  <Typography variant="body2" color="textSecondary">Retirement Accounts:</Typography>
+                  <Typography variant="body1">${formData.retirementAccounts || "0"}</Typography>
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                  <Typography variant="body2" color="textSecondary">Investment Accounts:</Typography>
+                  <Typography variant="body1">${formData.investmentAccounts || "0"}</Typography>
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                  <Typography variant="body2" color="textSecondary">Cash Accounts:</Typography>
+                  <Typography variant="body1">${formData.cashAccounts || "0"}</Typography>
+                </Box>
+              </Box>
             </Grid>
-          </>
-        )}
-      </MotionPaper>
+
+            {/* Liabilities Section */}
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6" gutterBottom color="error">
+                Liabilities
+              </Typography>
+              <Box sx={{ pl: 2 }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                  <Typography variant="body2" color="textSecondary">Mortgage:</Typography>
+                  <Typography variant="body1">${formData.mortgage || "0"}</Typography>
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                  <Typography variant="body2" color="textSecondary">Car Loans:</Typography>
+                  <Typography variant="body1">${formData.carLoans || "0"}</Typography>
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                  <Typography variant="body2" color="textSecondary">Credit Card Debt:</Typography>
+                  <Typography variant="body1">${formData.creditCardDebt || "0"}</Typography>
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                  <Typography variant="body2" color="textSecondary">Student Loans:</Typography>
+                  <Typography variant="body1">${formData.studentLoans || "0"}</Typography>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </MotionCard>
+    );
+  };
+
+  return (
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Grid container spacing={3} sx={{ height: { md: 'calc(100vh - 180px)', minHeight: '600px' } }}>
+        {/* Left Column - 1 part of the 1:4 ratio */}
+        <Grid item xs={12} md={3}>
+          <LeftColumn />
+        </Grid>
+
+        {/* Right Column - 4 parts of the 1:4 ratio */}
+        <Grid item xs={12} md={9}>
+          <Grid container spacing={3} sx={{ height: '100%' }}>
+            {/* Top Row */}
+            <Grid item xs={12} sx={{ height: { md: '30%' } }}>
+              <TopRightSection />
+            </Grid>
+            
+            {/* Bottom Row */}
+            <Grid item xs={12} sx={{ height: { md: '70%' } }}>
+              <BottomRightSection />
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
     </Container>
   );
 }

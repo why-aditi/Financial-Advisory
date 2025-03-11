@@ -14,6 +14,7 @@ import ForgotPass from "./Components/ForgotPass";
 import ForgotUserID from "./Components/ForgotId";
 import Form from "./Components/Form";
 import Dashboard from "./Components/Dashboard";
+import Profile from "./Components/Profile";
 
 function App() {
   const [mode, setMode] = useState("light");
@@ -138,6 +139,7 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPass />} />
               <Route path="/forgot-user-id" element={<ForgotUserID />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
             </Routes>
           </Box>
           <Footer />

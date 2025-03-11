@@ -73,7 +73,7 @@ export default function Navbar({ toggleColorMode, mode }) {
     setUserEmail("");
     setUserName("");
     handleMenuClose();
-    navigate("/login");
+    navigate("/");
   };
 
   // Get the first letter of user's name for the avatar
@@ -135,7 +135,7 @@ export default function Navbar({ toggleColorMode, mode }) {
     {
       name: "Profile",
       path: "/profile",
-      action: () => navigate("/dashboard"),
+      action: () => navigate("/profile"),
       icon: <PersonIcon />
     }
   ];
@@ -459,7 +459,7 @@ export default function Navbar({ toggleColorMode, mode }) {
         <MenuItem onClick={() => { handleMenuClose(); navigate("/dashboard"); }}>
           Dashboard
         </MenuItem>
-        <MenuItem onClick={() => { handleMenuClose(); navigate("/dashboard"); }}>
+        <MenuItem onClick={() => { handleMenuClose(); navigate("/profile"); }}>
           Profile
         </MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>

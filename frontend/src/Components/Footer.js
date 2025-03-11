@@ -64,9 +64,15 @@ export default function Footer() {
     <Box
       component="footer"
       sx={{
-        backgroundColor: theme.palette.mode === "dark" ? "#1A202C" : "#F5F7FA",
+        backgroundColor: theme.palette.mode === "dark" ? "#0F172A" : "#F5F7FA",
+        backgroundImage: theme.palette.mode === "dark" 
+          ? "linear-gradient(to right, #0F172A, #1E293B)" 
+          : "none",
         py: 6,
         mt: "auto",
+        borderTop: theme.palette.mode === "dark" 
+          ? "1px solid rgba(255, 255, 255, 0.05)" 
+          : "1px solid rgba(0, 0, 0, 0.05)",
       }}
     >
       <Container maxWidth="lg">

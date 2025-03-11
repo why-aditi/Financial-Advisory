@@ -63,10 +63,22 @@ export default function Home() {
         sx={{
           background:
             theme.palette.mode === "dark"
-              ? "linear-gradient(135deg, #1E1E1E 0%, #2D3748 100%)"
+              ? "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)"
               : "linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%)",
           pt: { xs: 8, md: 12 },
           pb: { xs: 8, md: 12 },
+          position: "relative",
+          overflow: "hidden",
+          "&::before": theme.palette.mode === "dark" ? {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%)",
+            pointerEvents: "none",
+          } : {},
         }}
       >
         <Container maxWidth="lg">

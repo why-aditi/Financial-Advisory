@@ -50,24 +50,36 @@ function App() {
         palette: {
           mode,
           primary: {
-            main: "#1E88E5", // Modern blue
-            light: "#64B5F6",
-            dark: "#0D47A1",
+            main: mode === "light" ? "#1E88E5" : "#6366F1", // Light: Modern blue, Dark: Indigo
+            light: mode === "light" ? "#64B5F6" : "#818CF8",
+            dark: mode === "light" ? "#0D47A1" : "#4F46E5",
             contrastText: "#FFFFFF",
           },
           secondary: {
-            main: "#FF8F00", // Warm orange
-            light: "#FFB74D",
-            dark: "#EF6C00",
+            main: mode === "light" ? "#FF8F00" : "#EC4899", // Light: Warm orange, Dark: Pink
+            light: mode === "light" ? "#FFB74D" : "#F472B6",
+            dark: mode === "light" ? "#EF6C00" : "#DB2777",
             contrastText: "#FFFFFF",
           },
           background: {
-            default: mode === "light" ? "#F5F5F5" : "#121212",
-            paper: mode === "light" ? "#FFFFFF" : "#1E1E1E",
+            default: mode === "light" ? "#F5F5F5" : "#0F172A", // Dark: Slate 900
+            paper: mode === "light" ? "#FFFFFF" : "#1E293B", // Dark: Slate 800
           },
           text: {
-            primary: mode === "light" ? "#212121" : "#FFFFFF",
-            secondary: mode === "light" ? "#757575" : "#B0B0B0",
+            primary: mode === "light" ? "#212121" : "#F1F5F9", // Dark: Slate 100
+            secondary: mode === "light" ? "#757575" : "#94A3B8", // Dark: Slate 400
+          },
+          error: {
+            main: "#EF4444", // Red
+          },
+          warning: {
+            main: "#F59E0B", // Amber
+          },
+          info: {
+            main: mode === "light" ? "#03A9F4" : "#38BDF8", // Light: Light Blue, Dark: Sky
+          },
+          success: {
+            main: "#10B981", // Emerald
           },
         },
         typography: {
@@ -95,7 +107,21 @@ function App() {
               root: {
                 boxShadow: "none",
                 "&:hover": {
-                  boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                  boxShadow: mode === "light" 
+                    ? "0px 2px 4px rgba(0, 0, 0, 0.1)" 
+                    : "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                  transform: "translateY(-2px)",
+                  transition: "all 0.2s ease-in-out",
+                },
+              },
+              containedPrimary: {
+                background: mode === "light" 
+                  ? "linear-gradient(90deg, #1E88E5, #42A5F5)" 
+                  : "linear-gradient(90deg, #6366F1, #818CF8)",
+                "&:hover": {
+                  background: mode === "light" 
+                    ? "linear-gradient(90deg, #1976D2, #1E88E5)" 
+                    : "linear-gradient(90deg, #4F46E5, #6366F1)",
                 },
               },
             },
@@ -103,8 +129,48 @@ function App() {
           MuiCard: {
             styleOverrides: {
               root: {
-                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.05)",
+                boxShadow: mode === "light" 
+                  ? "0px 4px 12px rgba(0, 0, 0, 0.05)" 
+                  : "0px 8px 16px rgba(0, 0, 0, 0.4)",
                 borderRadius: 12,
+                transition: "all 0.3s ease",
+                border: mode === "dark" ? "1px solid rgba(255, 255, 255, 0.05)" : "none",
+                "&:hover": {
+                  transform: "translateY(-4px)",
+                  boxShadow: mode === "light" 
+                    ? "0px 8px 24px rgba(0, 0, 0, 0.1)" 
+                    : "0px 12px 28px rgba(0, 0, 0, 0.5)",
+                },
+              },
+            },
+          },
+          MuiPaper: {
+            styleOverrides: {
+              root: {
+                backgroundImage: "none",
+              },
+            },
+          },
+          MuiAppBar: {
+            styleOverrides: {
+              root: {
+                boxShadow: mode === "light" 
+                  ? "0px 2px 4px rgba(0, 0, 0, 0.05)" 
+                  : "0px 2px 8px rgba(0, 0, 0, 0.3)",
+                backgroundImage: mode === "dark" 
+                  ? "linear-gradient(to right, #0F172A, #1E293B)" 
+                  : "none",
+              },
+            },
+          },
+          MuiSwitch: {
+            styleOverrides: {
+              switchBase: {
+                color: mode === "dark" ? "#6366F1" : "#1E88E5",
+              },
+              track: {
+                opacity: 0.2,
+                backgroundColor: mode === "dark" ? "#6366F1" : "#1E88E5",
               },
             },
           },

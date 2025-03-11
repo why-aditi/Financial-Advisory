@@ -358,7 +358,14 @@ function Dashboard() {
         
         {/* Investment Options Circles */}
         <Box sx={{ mb: 2, overflowX: 'auto' }}>
-          <Typography variant="subtitle1"  color="black" sx={{ mb: 0.5}}>
+          <Typography 
+            variant="subtitle1" 
+            sx={{ 
+              mb: 0.5, 
+              fontWeight: "medium",
+              color: theme.palette.mode === "light" ? "black" : "white"
+            }}
+          >
             Investment Options
           </Typography>
           <Box sx={{ 

@@ -133,14 +133,6 @@ Financial-Advisory/
 - CORS configuration
 - Environment variable protection
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
 ## Getting a Gemini API Key
 
 1. Go to Google AI Studio (https://makersuite.google.com/app/apikey)
@@ -148,7 +140,3 @@ Financial-Advisory/
 3. Click on "Get API key"
 4. Create a new API key or use an existing one
 5. Copy the API key and add it to your `.env` file
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details

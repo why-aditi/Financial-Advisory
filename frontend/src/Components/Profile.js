@@ -27,7 +27,6 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EmailIcon from "@mui/icons-material/Email";
 import BadgeIcon from "@mui/icons-material/Badge";
 import HomeIcon from "@mui/icons-material/Home";
-import BusinessIcon from "@mui/icons-material/Business";
 import PhoneIcon from "@mui/icons-material/Phone";
 import SavingsIcon from "@mui/icons-material/Savings";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";

@@ -26,7 +26,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -140,8 +139,7 @@ export default function Navbar({ toggleColorMode, mode }) {
     }
   ];
 
-  // Choose which navigation items to display based on authentication status
-  const displayNavItems = isAuthenticated ? authNavItems : navItems;
+  // Choose which navigation items to display based on authentication
 
   // Handle hash links when page loads
   useEffect(() => {
@@ -462,7 +460,7 @@ export default function Navbar({ toggleColorMode, mode }) {
         <MenuItem onClick={() => { handleMenuClose(); navigate("/profile"); }}>
           Profile
         </MenuItem>
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        <MenuItem onClick={() => { handleMenuClose(); handleLogout(); }}>Logout</MenuItem>
       </Menu>
     </AppBar>
   );

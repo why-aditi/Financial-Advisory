@@ -13,16 +13,66 @@ import {
   CardContent,
   useTheme,
   useMediaQuery,
+  Avatar,
+  LinearProgress,
 } from "@mui/material";
 import { motion } from "framer-motion";
 
-const MotionPaper = motion(Paper);
 const MotionCard = motion(Card);
+
+// Helper functions to calculate financial totals
+function calculateTotalAssets(formData) {
+  if (!formData) return "0";
+  
+  const assetFields = [
+    'primaryResidence',
+    'otherRealEstate',
+    'retirementAccounts',
+    'investmentAccounts',
+    'cashAccounts'
+  ];
+  
+  const total = assetFields.reduce((sum, field) => {
+    const value = parseFloat(formData[field]) || 0;
+    return sum + value;
+  }, 0);
+  
+  return total.toLocaleString();
+}
+
+function calculateTotalLiabilities(formData) {
+  if (!formData) return "0";
+  
+  const liabilityFields = [
+    'mortgage',
+    'carLoans',
+    'creditCardDebt',
+    'studentLoans',
+    'otherDebts'
+  ];
+  
+  const total = liabilityFields.reduce((sum, field) => {
+    const value = parseFloat(formData[field]) || 0;
+    return sum + value;
+  }, 0);
+  
+  return total.toLocaleString();
+}
+
+function calculateNetWorth(formData) {
+  if (!formData) return "0";
+  
+  const totalAssets = calculateTotalAssets(formData).replace(/,/g, '');
+  const totalLiabilities = calculateTotalLiabilities(formData).replace(/,/g, '');
+  
+  const netWorth = parseFloat(totalAssets) - parseFloat(totalLiabilities);
+  
+  return netWorth.toLocaleString();
+}
 
 function Dashboard() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -160,67 +210,124 @@ function Dashboard() {
     <MotionCard
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5 }}
+        transition={{ duration: 0.5 }}
       elevation={2}
-      sx={{ 
-        height: "100%", 
-        borderRadius: 2,
-        display: "flex",
-        flexDirection: "column"
-      }}
+      sx={{ borderRadius: 2, height: "100%" }}
     >
-      <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-        <Box sx={{ mb: 3, textAlign: "center" }}>
-          <Typography variant="h5" gutterBottom color="primary">
-            Quick Navigation
+      <CardContent sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <Typography variant="h6" color="primary" gutterBottom>
+          Financial Dashboard
+        </Typography>
+        
+        <Divider sx={{ mb: 2 }} />
+        
+        {/* Net Worth Section */}
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle1" fontWeight="medium" color="textSecondary" gutterBottom>
+            Net Worth
           </Typography>
-          <Divider />
+          <Typography variant="h5" color="primary">
+            ${formData ? calculateNetWorth(formData) : "0.00"}
+          </Typography>
         </Box>
         
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 'auto' }}>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={handleEditForm}
+        {/* Goals Section */}
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle1" fontWeight="medium" color="textSecondary" gutterBottom>
+            Financial Goals
+          </Typography>
+          
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="body2" fontWeight="medium">
+              Short Term
+            </Typography>
+            <LinearProgress 
+              variant="determinate" 
+              value={65} 
+              sx={{ 
+                height: 8, 
+                borderRadius: 4,
+                bgcolor: `${theme.palette.primary.main}15`,
+                '& .MuiLinearProgress-bar': {
+                  bgcolor: theme.palette.primary.main,
+                }
+              }} 
+            />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
+              <Typography variant="caption" color="textSecondary">Goal: $10,000</Typography>
+              <Typography variant="caption" color="textSecondary">65%</Typography>
+            </Box>
+          </Box>
+          
+          <Box>
+            <Typography variant="body2" fontWeight="medium">
+              Long Term
+            </Typography>
+            <LinearProgress 
+              variant="determinate" 
+              value={35} 
+          sx={{
+                height: 8, 
+                borderRadius: 4,
+                bgcolor: `${theme.palette.secondary.main}15`,
+                '& .MuiLinearProgress-bar': {
+                  bgcolor: theme.palette.secondary.main,
+                }
+              }} 
+            />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
+              <Typography variant="caption" color="textSecondary">Goal: $100,000</Typography>
+              <Typography variant="caption" color="textSecondary">35%</Typography>
+            </Box>
+          </Box>
+        </Box>
+        
+        {/* Navigation Options */}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mb: 2 }}>
+          <Button
+            variant="outlined"
+            color="primary"
             fullWidth
+            sx={{ justifyContent: "center", textTransform: "none" }}
           >
-            Update Financial Info
+            Download Investment Report
           </Button>
-          <Button 
-            variant="outlined" 
-            color="primary" 
-            onClick={() => navigate('/profile')}
+          
+          <Button
+            variant="outlined"
+            color="primary"
             fullWidth
+            sx={{ justifyContent: "center", textTransform: "none" }}
+            onClick={() => navigate("/profile")}
           >
             View Profile
           </Button>
-          <Button 
-            variant="outlined" 
-            color="secondary"
+          
+          <Button
+            variant="outlined"
+            color="primary"
             fullWidth
+            sx={{ justifyContent: "center", textTransform: "none" }}
+            onClick={handleEditForm}
           >
-            Financial Reports
-          </Button>
-          <Button 
-            variant="outlined" 
-            color="info"
-            fullWidth
-          >
-            Messages
+            Update Financial Info
           </Button>
         </Box>
         
-        <Box sx={{ mt: 4 }}>
-          <Divider sx={{ mb: 2 }} />
-          <Button 
-            variant="outlined" 
-            color="error" 
-            onClick={handleLogout}
-            fullWidth
-          >
-            Logout
-          </Button>
-        </Box>
+        {/* Spacer to push logout to bottom */}
+        <Box sx={{ flexGrow: 1 }} />
+        
+        {/* Logout Button */}
+        <Button
+          startIcon={<Box component="span" className="material-icons">logout</Box>}
+          variant="contained"
+          color="primary"
+          onClick={handleLogout}
+          fullWidth
+          sx={{ justifyContent: "center" }}
+        >
+          Logout
+        </Button>
       </CardContent>
     </MotionCard>
   );
@@ -236,18 +343,282 @@ function Dashboard() {
     >
       <CardContent>
         <Box sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           mb: 2,
         }}>
           <Typography variant="h5" gutterBottom color="primary" sx={{ mb: 0 }}>
             Welcome, {userData?.name || userName || "User"}!
           </Typography>
         </Box>
+
         
-        <Divider sx={{ mb: 3 }} />
+        <Divider sx={{ mb: 1 }} />
         
+        {/* Investment Options Circles */}
+        <Box sx={{ mb: 2, overflowX: 'auto' }}>
+          <Typography variant="subtitle1"  color="black" sx={{ mb: 0.5}}>
+            Investment Options
+          </Typography>
+          <Box sx={{ 
+            display: 'flex', 
+            gap: 2, 
+            pb: 1,
+            minWidth: 'max-content'
+          }}>
+            {/* Stocks */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              gap: 0.5
+            }}>
+              <Avatar 
+                src="https://cdn-icons-png.flaticon.com/512/4222/4222019.png"
+                sx={{ 
+                  bgcolor: 'white', 
+                  width: 70, 
+                  height: 70,
+                  cursor: 'pointer',
+                  p: 1.5,
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                  }
+                }}
+              />
+              <Typography variant="caption" fontWeight="medium" align="center">Stocks</Typography>
+            </Box>
+
+            {/* Bonds */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              gap: 0.5
+            }}>
+              <Avatar 
+                src="https://cdn-icons-png.flaticon.com/512/3310/3310624.png"
+                sx={{ 
+                  bgcolor: 'white', 
+                  width: 70, 
+                  height: 70,
+                  cursor: 'pointer',
+                  p: 1.5,
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                  }
+                }}
+              />
+              <Typography variant="caption" fontWeight="medium" align="center">Bonds</Typography>
+            </Box>
+
+            {/* Mutual Funds */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              gap: 0.5
+            }}>
+              <Avatar 
+                src="https://cdn-icons-png.flaticon.com/512/3347/3347835.png"
+                sx={{ 
+                  bgcolor: 'white', 
+                  width: 70, 
+                  height: 70, 
+                  cursor: 'pointer',
+                  p: 1.5,
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                  }
+                }}
+              />
+              <Typography variant="caption" fontWeight="medium" align="center">Mutual Funds</Typography>
+            </Box>
+
+            {/* ETFs */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              gap: 0.5
+            }}>
+              <Avatar 
+                src="https://cdn-icons-png.flaticon.com/512/1006/1006555.png"
+                sx={{ 
+                  bgcolor: 'white', 
+                  width: 70, 
+                  height: 70,
+                  cursor: 'pointer',
+                  p: 1.5,
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                  }
+                }}
+              />
+              <Typography variant="caption" fontWeight="medium" align="center">ETFs</Typography>
+            </Box>
+
+            {/* Real Estate */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              gap: 0.5
+            }}>
+              <Avatar 
+                src="https://cdn-icons-png.flaticon.com/512/1670/1670080.png"
+                sx={{ 
+                  bgcolor: 'white', 
+                  width: 70, 
+                  height: 70,
+                  cursor: 'pointer',
+                  p: 1.5,
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                  }
+                }}
+              />
+              <Typography variant="caption" fontWeight="medium" align="center">Real Estate</Typography>
+            </Box>
+
+            {/* Commodities */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              gap: 0.5
+            }}>
+              <Avatar 
+                src="https://cdn-icons-png.flaticon.com/512/2933/2933116.png"
+                sx={{ 
+                  bgcolor: 'white', 
+                  width: 70, 
+                  height: 70,
+                  cursor: 'pointer',
+                  p: 1.5,
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                  }
+                }}
+              />
+              <Typography variant="caption" fontWeight="medium" align="center">Commodities</Typography>
+            </Box>
+
+            {/* Cryptocurrency */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              gap: 0.5
+            }}>
+              <Avatar 
+                src="https://cdn-icons-png.flaticon.com/512/5968/5968260.png"
+                sx={{ 
+                  bgcolor: 'white', 
+                  width: 70, 
+                  height: 70,
+                  cursor: 'pointer',
+                  p: 1.5,
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                  }
+                }}
+              />
+              <Typography variant="caption" fontWeight="medium" align="center">Cryptocurrency</Typography>
+            </Box>
+
+            {/* Index Funds */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              gap: 0.5
+            }}>
+              <Avatar 
+                src="https://cdn-icons-png.flaticon.com/512/4256/4256900.png"
+                sx={{ 
+                  bgcolor: 'white', 
+                  width: 70, 
+                  height: 70,
+                  cursor: 'pointer',
+                  p: 1.5,
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                  }
+                }}
+              />
+              <Typography variant="caption" fontWeight="medium" align="center">Index Funds</Typography>
+            </Box>
+
+            {/* Retirement Accounts - Changed to Fixed Deposits */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              gap: 0.5
+            }}>
+              <Avatar 
+                src="https://cdn-icons-png.flaticon.com/512/2830/2830284.png"
+                sx={{ 
+                  bgcolor: 'white', 
+                  width: 70, 
+                  height: 70,
+                  cursor: 'pointer',
+                  p: 1.5,
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                  }
+                }}
+              />
+              <Typography variant="caption" fontWeight="medium" align="center">Fixed Deposits</Typography>
+            </Box>
+
+            {/* Private Equity */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              gap: 0.5
+            }}>
+              <Avatar 
+                src="https://cdn-icons-png.flaticon.com/512/3135/3135679.png"
+                sx={{ 
+                  bgcolor: 'white', 
+                  width: 70, 
+                  height: 70,
+                  cursor: 'pointer',
+                  p: 1.5,
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                  }
+                }}
+              />
+              <Typography variant="caption" fontWeight="medium" align="center">Private Equity</Typography>
+            </Box>
+          </Box>
+        </Box>
+
         <Typography variant="body1" paragraph>
           Here's a summary of your account status and recent activities.
         </Typography>
@@ -355,19 +726,19 @@ function Dashboard() {
       >
         <CardContent>
           <Typography variant="h5" gutterBottom color="primary">
-            Your Financial Summary
-          </Typography>
-          <Divider sx={{ mb: 3 }} />
-          <Typography variant="body1" paragraph>
-            Based on the information you provided, here's a summary of your financial situation.
-          </Typography>
-          
-          <Grid container spacing={3}>
-            {/* Assets Section */}
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6" gutterBottom color="primary">
-                Assets
+                Your Financial Summary
               </Typography>
+          <Divider sx={{ mb: 3 }} />
+              <Typography variant="body1" paragraph>
+            Based on the information you provided, here's a summary of your financial situation.
+              </Typography>
+
+            <Grid container spacing={3}>
+              {/* Assets Section */}
+              <Grid item xs={12} md={6}>
+                    <Typography variant="h6" gutterBottom color="primary">
+                      Assets
+                    </Typography>
               <Box sx={{ pl: 2 }}>
                 <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                   <Typography variant="body2" color="textSecondary">Primary Residence:</Typography>
@@ -386,13 +757,13 @@ function Dashboard() {
                   <Typography variant="body1">${formData.cashAccounts || "0"}</Typography>
                 </Box>
               </Box>
-            </Grid>
+              </Grid>
 
-            {/* Liabilities Section */}
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6" gutterBottom color="error">
-                Liabilities
-              </Typography>
+              {/* Liabilities Section */}
+              <Grid item xs={12} md={6}>
+                    <Typography variant="h6" gutterBottom color="error">
+                      Liabilities
+                    </Typography>
               <Box sx={{ pl: 2 }}>
                 <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                   <Typography variant="body2" color="textSecondary">Mortgage:</Typography>
@@ -411,36 +782,30 @@ function Dashboard() {
                   <Typography variant="body1">${formData.studentLoans || "0"}</Typography>
                 </Box>
               </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </MotionCard>
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </MotionCard>
     );
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Grid container spacing={3} sx={{ height: { md: 'calc(100vh - 180px)', minHeight: '600px' } }}>
-        {/* Left Column - 1 part of the 1:4 ratio */}
+    <Container maxWidth="xl" sx={{ mt: 4, mb: 8, minHeight: "80vh" }}>
+      <Grid container spacing={3}>
         <Grid item xs={12} md={3}>
           <LeftColumn />
-        </Grid>
-
-        {/* Right Column - 4 parts of the 1:4 ratio */}
+                      </Grid>
         <Grid item xs={12} md={9}>
-          <Grid container spacing={3} sx={{ height: '100%' }}>
-            {/* Top Row */}
-            <Grid item xs={12} sx={{ height: { md: '30%' } }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
               <TopRightSection />
-            </Grid>
-            
-            {/* Bottom Row */}
-            <Grid item xs={12} sx={{ height: { md: '70%' } }}>
+                      </Grid>
+            <Grid item xs={12}>
               <BottomRightSection />
+                      </Grid>
+                    </Grid>
+              </Grid>
             </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
     </Container>
   );
 }

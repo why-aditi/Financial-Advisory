@@ -1,5 +1,4 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-
 const apiKey = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
@@ -30,10 +29,29 @@ const generationConfig = {
 async function getNumericalGoal(userData) {
   try {
     const prompt = `
-        You are a financial advisor AI specializing in personalized investment guidance. When responding, analyze the user’s financial background, interests, and risk tolerance. Show how much of their short-term and long-term goals they’ve completed only in percentage. If the user’s background is unknown, offer well-rounded advice suitable for different risk profiles. Avoid generic responses—give practical, data-driven recommendations that align with the user's financial aspirations.
-  
-        User Data: ${JSON.stringify(userData)}
-      `;
+      You are a financial advisor AI specializing in personalized investment guidance.
+      
+      IMPORTANT: Carefully analyze the provided user data including their financial background, 
+      current savings, investments, income, expenses, and stated goals.
+      
+      Based on this analysis, calculate meaningful percentage estimates of:
+      1. Short-term goal completion (1-3 year goals) - Compare current savings/investments against 
+         short-term targets mentioned in the data
+      2. Long-term goal completion - Evaluate progress toward retirement 
+         or other long-term financial goals
+         
+      Consider factors like:
+      - Current savings relative to stated goals
+      - Investment portfolio alignment with goals
+      - Income vs. expenses and saving rate
+      - Debt levels and repayment progress
+      - Age and time horizon
+      
+      Even if some data is missing, provide your best reasonable estimate based on available information.
+      DO NOT return 0% unless the user truly has made no progress. Provide realistic percentages.
+      
+      User Data: ${JSON.stringify(userData)}
+    `;
 
     const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: prompt }] }],

@@ -11,6 +11,41 @@ A modern web application that provides personalized financial advice and investm
 - 📈 Real-time financial summaries
 - 🎯 Personalized investment recommendations
 - 📱 Responsive design for all devices
+- 🎨 Modern, intuitive user interface
+- 🔄 Dynamic goal analysis
+- 📋 Comprehensive investment reports
+- 💡 Smart financial insights
+- 🛣️ Step-by-step investment strategies
+
+## Investment Options
+
+The platform provides detailed analysis and recommendations for various investment types:
+
+- Stocks
+- Bonds
+- Mutual Funds
+- ETFs
+- Real Estate
+- Commodities
+- Cryptocurrency
+- Index Funds
+- Fixed Deposits
+- Private Equity
+
+## AI-Powered Analysis
+
+Our platform leverages Google's Gemini AI to provide:
+
+- Personalized investment advice
+- Understanding of your financial situation
+- Pros and cons analysis
+- Investment suitability assessment
+- Step-by-step investment strategies
+- Action-oriented next steps
+- Important risk considerations
+- Goal-based financial planning
+- Timeline-based recommendations
+- Monthly savings targets
 
 ## Tech Stack
 
@@ -20,6 +55,7 @@ A modern web application that provides personalized financial advice and investm
 - Material-UI (MUI)
 - Framer Motion for animations
 - React Router for navigation
+- LocalStorage for data persistence
 
 ### Backend
 
@@ -105,6 +141,7 @@ The application will be available at `http://localhost:3000`
 ### AI Investment Advice
 
 - POST `/api/investment-advice` - Get AI-powered investment advice
+- POST `/api/goal-analysis` - Get AI-powered goal analysis and recommendations
 
 ## Project Structure
 
@@ -113,14 +150,22 @@ Financial-Advisory/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
+│   │   │   ├── Dashboard.js
+│   │   │   ├── Form.js
+│   │   │   └── ...
 │   │   ├── pages/
 │   │   └── App.js
 │   └── package.json
 │
 └── backend/
     ├── routes/
+    │   ├── aiRoutes.js
+    │   └── ...
     ├── models/
     ├── services/
+    │   ├── geminiGoal.js
+    │   ├── geminiAdv.js
+    │   └── ...
     ├── middleware/
     └── server.js
 ```
@@ -132,6 +177,7 @@ Financial-Advisory/
 - Protected API routes
 - CORS configuration
 - Environment variable protection
+- Secure data storage
 
 ## Getting a Gemini API Key
 

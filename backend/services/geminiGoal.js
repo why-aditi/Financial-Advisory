@@ -7,7 +7,7 @@ const model = genAI.getGenerativeModel({
 });
 
 const generationConfig = {
-  temperature: 0.6,
+  temperature: 0.3,
   topP: 0.95,
   topK: 40,
   maxOutputTokens: 8192,
@@ -21,18 +21,18 @@ const generationConfig = {
       "Long Term": {
         type: "string",
       },
-      "Short term amount needed": {
+      "Short term Total amount": {
         type: "string",
       },
-      "Long Term amount needed": {
+      "Long Term Total amount": {
         type: "string",
       },
     },
     required: [
       "Short term",
       "Long Term",
-      "Short term amount needed",
-      "Long Term amount needed",
+      "Short term Total amount",
+      "Long Term Total amount",
     ],
   },
 };

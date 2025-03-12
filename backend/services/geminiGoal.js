@@ -21,8 +21,19 @@ const generationConfig = {
       "Long Term": {
         type: "string",
       },
+      "Short term amount needed": {
+        type: "string",
+      },
+      "Long Term amount needed": {
+        type: "string",
+      },
     },
-    required: ["Short term", "Long Term"],
+    required: [
+      "Short term",
+      "Long Term",
+      "Short term amount needed",
+      "Long Term amount needed",
+    ],
   },
 };
 
@@ -34,11 +45,17 @@ async function getNumericalGoal(userData) {
       IMPORTANT: Carefully analyze the provided user data including their financial background, 
       current savings, investments, income, expenses, and stated goals.
       
-      Based on this analysis, calculate meaningful percentage estimates of:
-      1. Short-term goal completion (1-3 year goals) - Compare current savings/investments against 
-         short-term targets mentioned in the data
-      2. Long-term goal completion - Evaluate progress toward retirement 
-         or other long-term financial goals
+      Based on this analysis, provide:
+      
+      1. Percentage completion of Short-term goals (1-3 year goals) - Compare current savings/investments 
+         against short-term targets mentioned in the data
+      
+      2. Percentage completion of Long-term goals (retirement/long-term wealth) - Evaluate progress toward 
+         retirement or other long-term financial goals
+      
+      3. The estimated amount of money (in INR) still needed to complete their Short-term goals
+      
+      4. The estimated amount of money (in INR) still needed to complete their Long-term goals
          
       Consider factors like:
       - Current savings relative to stated goals
@@ -49,6 +66,7 @@ async function getNumericalGoal(userData) {
       
       Even if some data is missing, provide your best reasonable estimate based on available information.
       DO NOT return 0% unless the user truly has made no progress. Provide realistic percentages.
+      For the monetary amounts, provide specific INR amounts (e.g., "Rs. 25,000").
       
       User Data: ${JSON.stringify(userData)}
     `;

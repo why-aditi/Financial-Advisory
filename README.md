@@ -2,6 +2,10 @@
 
 A modern web application that provides personalized financial advice and investment recommendations using AI-powered insights.
 
+## Demo Video
+https://github.com/user-attachments/assets/1d4e7e8a-be5e-4d97-b1ad-d88625f3f00d
+
+
 ## Features
 
 - 🔒 Secure user authentication

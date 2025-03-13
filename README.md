@@ -186,3 +186,13 @@ Financial-Advisory/
 3. Click on "Get API key"
 4. Create a new API key or use an existing one
 5. Copy the API key and add it to your `.env` file
+
+## Data Flow
+
+### Goal Analysis
+
+- **Form.js**: After submitting the financial assessment form, the goal analysis is performed using the `/api/goal-analysis` endpoint. The results are parsed and stored in local storage under the key `goalAnalysis`.
+
+- **Dashboard.js**: Retrieves the goal analysis data from local storage and displays the short-term and long-term goals with progress bars and total amounts needed.
+
+This setup ensures that the goal data is seamlessly integrated between the form submission and the dashboard display.
